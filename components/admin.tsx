@@ -1,10 +1,13 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { Button, StyleSheet, Text, View } from "react-native";
+
 const AdminScreen = () => {
+  const navigation: NavigationProp<RootStackParamList> = useNavigation();
+
   return (
     <View style={styles.container}>
       <Text>Admin Here</Text>
-      <StatusBar style="auto" />
+      <Button title="Go Home" onPress={() => navigation.navigate("Home")} />
     </View>
   );
 };
