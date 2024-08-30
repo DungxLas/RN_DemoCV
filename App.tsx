@@ -1,12 +1,15 @@
 import { NavigationContainer } from "@react-navigation/native";
 import "./zzz/gesture-handler";
 import AppNavigation from "./components/navigation/app.navigation";
+import { SafeAreaView } from "react-native";
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <AppNavigation />
-    </NavigationContainer>
+    <SafeAreaView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <AppNavigation />
+      </NavigationContainer>
+    </SafeAreaView>
   );
 };
 
