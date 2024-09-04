@@ -30,7 +30,11 @@ const AppNavigation = () => {
   return (
     <>
       <Drawer.Navigator
-      // screenOptions={{ headerShown: false }}
+        screenOptions={{
+          drawerStyle: {
+            backgroundColor: "#ab2544", // Màu nền tùy chỉnh
+          },
+        }}
       >
         <Drawer.Screen
           name="Layout"
