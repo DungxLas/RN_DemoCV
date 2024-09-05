@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "../home";
-import AdminScreen from "../admin";
+import AdminScreen from "../admin/admin";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import React from "react";
 import UserScreen from "../user";
