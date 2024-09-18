@@ -55,7 +55,7 @@ const ImagePicker = (props) => {
     ) {
       // Extract the URI from the first asset in the assets array
       const pickedImageNow = (image as ImagePickerSuccessResult).assets[0];
-      setPickedImage(pickedImageNow); // Set the URI as the string in state
+      setPickedImage(pickedImageNow);
       onTakeImage(pickedImageNow);
     } else {
       Alert.alert("Image picker canceled");

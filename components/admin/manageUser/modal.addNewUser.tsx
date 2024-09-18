@@ -4,15 +4,14 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  Alert,
   Pressable,
   ScrollView,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Picker } from "@react-native-picker/picker";
 import ImagePicker from "./imagePicker";
-import axios from "axios";
 import Toast from "react-native-toast-message";
+import { postCreateNewUser } from "../../../src/services/apiServices";
 
 const ModalAddNewUser = (props) => {
   const { closeModal } = props;
@@ -30,48 +29,25 @@ const ModalAddNewUser = (props) => {
   };
 
   const onSubmit = async (data) => {
-    //call apis
-    const userData = new FormData();
-    userData.append("email", data.email);
-    userData.append("password", data.password);
-    userData.append("username", data.userName);
-    userData.append("role", data.role);
+    const dataUser = await postCreateNewUser(data);
+    console.log(dataUser);
 
-    if (data.image) {
-      userData.append("userImage", {
-        uri: data.image.uri,
-        type: "image/jpeg",
-        name: "photo.jpg",
-      });
-    }
-
-    const response = await axios.post(
-      "http://192.168.0.154:8081/api/v1/participant",
-      userData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    console.log(response.data);
-
-    if (response.data && response.data.EC === 0) {
+    if (dataUser && dataUser.EC === 0) {
       // Hiển thị thông báo
       Toast.show({
         type: "success",
-        text1: response.data.EM,
+        text1: dataUser.EM,
         position: "bottom",
       });
 
       handleClose(); // Đóng modal
     }
 
-    if (response.data && response.data.EC !== 0) {
+    if (dataUser && dataUser.EC !== 0) {
       // Hiển thị thông báo lỗi
       Toast.show({
         type: "error",
-        text1: response.data.EM,
+        text1: dataUser.EM,
         position: "bottom",
       });
     }
