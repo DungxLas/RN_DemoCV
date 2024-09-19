@@ -30,7 +30,6 @@ const ModalAddNewUser = (props) => {
 
   const onSubmit = async (data) => {
     const dataUser = await postCreateNewUser(data);
-    console.log(dataUser);
 
     if (dataUser && dataUser.EC === 0) {
       // Hiển thị thông báo
@@ -41,6 +40,8 @@ const ModalAddNewUser = (props) => {
       });
 
       handleClose(); // Đóng modal
+
+      await props.fetchListUsers();
     }
 
     if (dataUser && dataUser.EC !== 0) {

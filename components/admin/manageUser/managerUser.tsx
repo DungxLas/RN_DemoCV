@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,17 +6,47 @@ import {
   Modal,
   Pressable,
 } from "react-native";
+import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import ModalAddNewUser from "./modal.addNewUser";
 import Toast from "react-native-toast-message";
+import TableUser from "./tableUser";
+import { getAllUsers } from "../../../src/services/apiServices";
 
 const ManagerUserScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [listUsers, setListUser] = useState([
+    {
+      id: 19,
+      username: "Adcj",
+      email: "testf@gmail.com",
+      role: "ADMIN",
+    },
+    {
+      id: 18,
+      username: "Wedc",
+      email: "test11wdgfggerf@gmail.com",
+      role: "USER",
+    },
+  ]);
+
+  useEffect(() => {
+    fetchListUsers();
+  }, []);
+
+  const fetchListUsers = async () => {
+    let res = await getAllUsers();
+    console.log(res);
+    if (res.EC === 0) {
+      setListUser(res.DT);
+    }
+  };
+
   return (
     <>
       <View style={styles.container}>
-        <Text>Home Here</Text>
+        <TableUser listUsers={listUsers} />
 
         {/* Nút để mở modal */}
         <TouchableOpacity
@@ -39,7 +68,10 @@ const ManagerUserScreen = () => {
             style={styles.modalContainer}
             //onPress={() => setModalVisible(false)}
           >
-            <ModalAddNewUser closeModal={() => setModalVisible(false)} />
+            <ModalAddNewUser
+              closeModal={() => setModalVisible(false)}
+              fetchListUsers={fetchListUsers}
+            />
           </Pressable>
         </Modal>
       </View>
@@ -52,15 +84,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 10,
   },
   button: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    alignSelf: "center",
     backgroundColor: "#007bff",
     padding: 10,
     borderRadius: 5,
+    marginVertical: 20, // Đặt khoảng cách giữa TableUser và nút
   },
   buttonText: {
     color: "white",

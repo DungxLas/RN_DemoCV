@@ -21,5 +21,8 @@ const postCreateNewUser = (data): Promise<ApiResponse | null> => {
     },
   });
 };
+const getAllUsers = (): Promise<ApiResponse | null> => {
+  return instance.get("api/v1/participant/all");
+};
 
-export { postCreateNewUser };
+export { postCreateNewUser, getAllUsers };
