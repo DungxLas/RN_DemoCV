@@ -6,14 +6,18 @@ import {
   PermissionStatus,
   useCameraPermissions,
 } from "expo-image-picker";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Image, View, Text, StyleSheet, Pressable } from "react-native";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 
 const ImagePicker = (props) => {
   const { onTakeImage, value } = props;
 
-  const [pickedImage, setPickedImage] = useState(value);
+  const [pickedImage, setPickedImage] = useState("");
+
+  useEffect(() => {
+    setPickedImage(value);
+  }, [value]);
 
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions();
@@ -55,7 +59,7 @@ const ImagePicker = (props) => {
     ) {
       // Extract the URI from the first asset in the assets array
       const pickedImageNow = (image as ImagePickerSuccessResult).assets[0];
-      setPickedImage(pickedImageNow);
+      setPickedImage(pickedImageNow.uri);
       onTakeImage(pickedImageNow);
     } else {
       Alert.alert("Image picker canceled");
@@ -65,9 +69,7 @@ const ImagePicker = (props) => {
   let imagePreview = <Text>No Image taken yet.</Text>;
 
   if (pickedImage) {
-    imagePreview = (
-      <Image style={styles.image} source={{ uri: pickedImage.uri }} />
-    );
+    imagePreview = <Image style={styles.image} source={{ uri: pickedImage }} />;
   }
 
   return (

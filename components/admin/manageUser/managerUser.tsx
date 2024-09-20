@@ -1,35 +1,20 @@
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Modal,
-  Pressable,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, Modal } from "react-native";
 import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
 import ModalAddNewUser from "./modal.addNewUser";
 import Toast from "react-native-toast-message";
 import TableUser from "./tableUser";
 import { getAllUsers } from "../../../src/services/apiServices";
+import ModalUpdateUser from "./modal.updateUser";
 
 const ManagerUserScreen = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [showModalCreateUser, setShowModalCreateUser] = useState(false);
 
-  const [listUsers, setListUser] = useState([
-    {
-      id: 19,
-      username: "Adcj",
-      email: "testf@gmail.com",
-      role: "ADMIN",
-    },
-    {
-      id: 18,
-      username: "Wedc",
-      email: "test11wdgfggerf@gmail.com",
-      role: "USER",
-    },
-  ]);
+  const [showModalUpdateUser, setShowModalUpdateUser] = useState(false);
+
+  const [listUsers, setListUser] = useState([]);
+
+  const [userUpdate, setUserUpdate] = useState({});
 
   useEffect(() => {
     fetchListUsers();
@@ -37,21 +22,25 @@ const ManagerUserScreen = () => {
 
   const fetchListUsers = async () => {
     let res = await getAllUsers();
-    console.log(res);
     if (res.EC === 0) {
       setListUser(res.DT);
     }
   };
 
+  const openModalToUpdate = (user) => {
+    setShowModalUpdateUser(true);
+    setUserUpdate(user);
+  };
+
   return (
     <>
       <View style={styles.container}>
-        <TableUser listUsers={listUsers} />
+        <TableUser listUsers={listUsers} openModal={openModalToUpdate} />
 
         {/* Nút để mở modal */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => setModalVisible(true)}
+          onPress={() => setShowModalCreateUser(true)}
         >
           <Icon name="add" size={20} color="white" />
           <Text style={styles.buttonText}> Add New User</Text>
@@ -61,18 +50,31 @@ const ManagerUserScreen = () => {
         <Modal
           animationType="slide"
           transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)} // Đóng modal khi người dùng ấn ngoài modal
+          visible={showModalCreateUser}
+          onRequestClose={() => setShowModalCreateUser(false)} // Đóng modal khi người dùng ấn ngoài modal
         >
-          <Pressable
-            style={styles.modalContainer}
-            //onPress={() => setModalVisible(false)}
-          >
+          <View style={styles.modalContainer}>
             <ModalAddNewUser
-              closeModal={() => setModalVisible(false)}
+              closeModal={() => setShowModalCreateUser(false)}
               fetchListUsers={fetchListUsers}
             />
-          </Pressable>
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModalUpdateUser}
+          onRequestClose={() => setShowModalUpdateUser(false)} // Đóng modal khi người dùng ấn ngoài modal
+        >
+          <View style={styles.modalContainer}>
+            {userUpdate && (
+              <ModalUpdateUser
+                userUpdate={userUpdate} // Pass the user data to the modal
+                closeModal={() => setShowModalUpdateUser(false)}
+                fetchListUsers={fetchListUsers}
+              />
+            )}
+          </View>
         </Modal>
       </View>
       <Toast />

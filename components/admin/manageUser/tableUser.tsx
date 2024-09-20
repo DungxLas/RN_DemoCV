@@ -10,7 +10,7 @@ import {
 import { SwipeListView } from "react-native-swipe-list-view";
 
 const TableUser = (props) => {
-  const { listUsers } = props;
+  const { listUsers, openModal } = props;
 
   const renderItem = ({ item }) => {
     return (
@@ -36,9 +36,9 @@ const TableUser = (props) => {
       <View style={styles.rowBack}>
         <TouchableOpacity
           style={[styles.backButton, styles.backLeftButton]}
-          onPress={() =>
-            Alert.alert("Update Item", `Updateing ${item.username}`)
-          }
+          onPress={() => {
+            openModal(item);
+          }}
         >
           <Text style={styles.backText}>Update</Text>
         </TouchableOpacity>
