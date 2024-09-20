@@ -9,12 +9,12 @@ import {
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { Picker } from "@react-native-picker/picker";
-import ImagePicker from "./imagePicker";
 import Toast from "react-native-toast-message";
-import { postCreateNewUser } from "../../../src/services/apiServices";
+import { postCreateNewUser } from "../../../../src/services/apiServices";
+import ImagePicker from "../imagePicker";
 
 const ModalAddNewUser = (props) => {
-  const { closeModal } = props;
+  const { closeModal, fetchListUsers } = props;
 
   const {
     control,
@@ -41,7 +41,7 @@ const ModalAddNewUser = (props) => {
 
       handleClose(); // Đóng modal
 
-      await props.fetchListUsers();
+      await fetchListUsers();
     }
 
     if (dataUser && dataUser.EC !== 0) {

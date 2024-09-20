@@ -1,11 +1,11 @@
 import { StyleSheet, Text, TouchableOpacity, View, Modal } from "react-native";
 import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
-import ModalAddNewUser from "./modal.addNewUser";
 import Toast from "react-native-toast-message";
 import TableUser from "./tableUser";
 import { getAllUsers } from "../../../src/services/apiServices";
-import ModalUpdateUser from "./modal.updateUser";
+import ModalAddNewUser from "./CRUD/modal.addNewUser";
+import ModalUpdateUser from "./CRUD/modal.updateUser";
 
 const ManagerUserScreen = () => {
   const [showModalCreateUser, setShowModalCreateUser] = useState(false);
@@ -35,7 +35,11 @@ const ManagerUserScreen = () => {
   return (
     <>
       <View style={styles.container}>
-        <TableUser listUsers={listUsers} openModal={openModalToUpdate} />
+        <TableUser
+          listUsers={listUsers}
+          openModal={openModalToUpdate}
+          fetchListUsers={fetchListUsers}
+        />
 
         {/* Nút để mở modal */}
         <TouchableOpacity

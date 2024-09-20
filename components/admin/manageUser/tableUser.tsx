@@ -8,9 +8,10 @@ import {
 } from "react-native";
 
 import { SwipeListView } from "react-native-swipe-list-view";
+import AlertDeleteUser from "./CRUD/alert.deleteUser";
 
 const TableUser = (props) => {
-  const { listUsers, openModal } = props;
+  const { listUsers, openModal, fetchListUsers } = props;
 
   const renderItem = ({ item }) => {
     return (
@@ -18,7 +19,7 @@ const TableUser = (props) => {
         <View style={styles.userImageContainer}>
           <Image
             style={styles.userImage}
-            source={require("../../../assets/images/react-native.png")}
+            source={{ uri: `data:image/jpeg;base64,${item.image}` }}
           />
         </View>
         <View style={styles.userContent}>
@@ -44,9 +45,7 @@ const TableUser = (props) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.backButton, styles.backRightButton]}
-          onPress={() =>
-            Alert.alert("Delete Item", `Deleting ${item.username}`)
-          }
+          onPress={() => AlertDeleteUser(item, fetchListUsers)}
         >
           <Text style={styles.backText}>Delete</Text>
         </TouchableOpacity>
