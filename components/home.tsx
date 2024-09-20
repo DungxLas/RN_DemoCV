@@ -8,7 +8,6 @@ const HomeScreen = (props: any) => {
     <View
     // style={styles.container}
     >
-      <Text>Home Here</Text>
       <Button title="View Admin" onPress={() => navigation.navigate("Admin")} />
       <Button title="View User" onPress={() => navigation.navigate("User")} />
     </View>
