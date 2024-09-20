@@ -11,10 +11,10 @@ import { useForm, Controller } from "react-hook-form";
 import { Picker } from "@react-native-picker/picker";
 import ImagePicker from "./imagePicker";
 import Toast from "react-native-toast-message";
-import { postCreateNewUser } from "../../../src/services/apiServices";
+import { pushUpdateUser } from "../../../src/services/apiServices";
 
 const ModalUpdateUser = (props) => {
-  const { closeModal, userUpdate } = props;
+  const { closeModal, userUpdate, fetchListUsers } = props;
 
   const {
     control,
@@ -25,11 +25,11 @@ const ModalUpdateUser = (props) => {
   } = useForm();
 
   useEffect(() => {
-    console.log(userUpdate);
     setValue("email", userUpdate.email);
+    setValue("password", "");
     setValue("userName", userUpdate.username);
     setValue("role", userUpdate.role);
-    setValue("image", `data:image/jpeg;base64,${userUpdate.image}`);
+    setValue("imageUrl", `data:image/jpeg;base64,${userUpdate.image}`);
   }, [userUpdate]);
 
   const handleClose = () => {
@@ -38,7 +38,12 @@ const ModalUpdateUser = (props) => {
   };
 
   const onSubmit = async (data) => {
-    const dataUser = await postCreateNewUser(data);
+    const dataUser = await pushUpdateUser(
+      userUpdate.id,
+      data.userName,
+      data.role,
+      data.imageUrl
+    );
 
     if (dataUser && dataUser.EC === 0) {
       // Hiển thị thông báo
@@ -50,7 +55,7 @@ const ModalUpdateUser = (props) => {
 
       handleClose(); // Đóng modal
 
-      await props.fetchListUsers();
+      await fetchListUsers();
     }
 
     if (dataUser && dataUser.EC !== 0) {
@@ -86,6 +91,7 @@ const ModalUpdateUser = (props) => {
                 value={value}
                 placeholder="Enter email"
                 keyboardType="email-address"
+                editable={false}
               />
             )}
           />
@@ -99,7 +105,7 @@ const ModalUpdateUser = (props) => {
           <Controller
             control={control}
             name="password"
-            rules={{ required: "Password is required" }}
+            //rules={{ required: "Password is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 style={styles.input}
@@ -107,6 +113,7 @@ const ModalUpdateUser = (props) => {
                 onBlur={onBlur}
                 value={value}
                 placeholder="Password"
+                editable={false}
               />
             )}
           />
@@ -170,12 +177,12 @@ const ModalUpdateUser = (props) => {
           <Text style={styles.label}>Image</Text>
           <Controller
             control={control}
-            name="image"
+            name="imageUrl"
             rules={{ required: "Image is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <ImagePicker
                 onTakeImage={(imageUrl) => onChange(imageUrl)}
-                value={value}
+                imageUrl={value}
               />
             )}
           />
@@ -183,7 +190,7 @@ const ModalUpdateUser = (props) => {
 
         <View style={styles.buttonContainer}>
           <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-            <Text style={styles.text}>Add User</Text>
+            <Text style={styles.text}>Update User</Text>
           </Pressable>
           <Pressable style={styles.button} onPress={() => handleClose()}>
             <Text style={styles.text}>Close</Text>
@@ -234,7 +241,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   button: {
-    width: 100,
+    width: 120,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 5,

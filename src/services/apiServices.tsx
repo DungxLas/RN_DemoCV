@@ -13,7 +13,11 @@ const postCreateNewUser = (data): Promise<ApiResponse | null> => {
   userData.append("password", data.password);
   userData.append("username", data.userName);
   userData.append("role", data.role);
-  userData.append("userImage", data.image.uri);
+  userData.append("userImage", {
+    uri: data.imageUrl,
+    type: "image/jpeg",
+    name: "userImage.jpg",
+  } as any);
 
   return instance.post("api/v1/participant", userData, {
     headers: {
@@ -25,4 +29,27 @@ const getAllUsers = (): Promise<ApiResponse | null> => {
   return instance.get("api/v1/participant/all");
 };
 
-export { postCreateNewUser, getAllUsers };
+const pushUpdateUser = (
+  id,
+  username,
+  role,
+  imageUrl
+): Promise<ApiResponse | null> => {
+  const userData = new FormData();
+  userData.append("id", id);
+  userData.append("username", username);
+  userData.append("role", role);
+  userData.append("userImage", {
+    uri: imageUrl,
+    type: "image/jpeg",
+    name: "userImage.jpg",
+  } as any);
+
+  return instance.put("api/v1/participant", userData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export { postCreateNewUser, getAllUsers, pushUpdateUser };

@@ -161,12 +161,12 @@ const ModalAddNewUser = (props) => {
           <Text style={styles.label}>Image</Text>
           <Controller
             control={control}
-            name="image"
+            name="imageUrl"
             rules={{ required: "Image is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <ImagePicker
                 onTakeImage={(imageUrl) => onChange(imageUrl)}
-                value={value}
+                imageUrl={value}
               />
             )}
           />
