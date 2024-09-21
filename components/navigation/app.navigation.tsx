@@ -8,6 +8,8 @@ import AppHeader from "./app.header";
 import Login from "../Auth/Login";
 import Signup from "../Auth/Signup";
 import Toast from "react-native-toast-message";
+import { useSelector } from "react-redux";
+import { View, Text } from "react-native";
 
 const HomeLayout = () => {
   const Stack = createStackNavigator<RootStackParamList>();
@@ -28,6 +30,10 @@ const HomeLayout = () => {
 
 const AppNavigation = () => {
   const Drawer = createDrawerNavigator();
+
+  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+  const account = useSelector((state) => state.user.account);
+
   return (
     <>
       <Drawer.Navigator
@@ -36,20 +42,31 @@ const AppNavigation = () => {
             backgroundColor: "#e67373", // Màu nền tùy chỉnh
           },
         }}
+        // drawerContent={() => (
+        //   <View style={{ flex: 1, padding: 20 }}>
+        //     <Text>
+        //       Hello, {isAuthenticated ? account?.username : "Who are you?"} {}
+        //     </Text>
+        //   </View>
+        // )}
       >
         <Drawer.Screen
           name="Layout"
           component={HomeLayout}
           options={{ header: () => <></> }}
         />
-        <Drawer.Screen name="Login" component={Login} />
-        <Drawer.Screen
-          name="Signup"
-          options={{
-            title: "Sign up",
-          }}
-          component={Signup}
-        />
+        {isAuthenticated ? (
+          <Drawer.Screen name="Logout" component={Login} />
+        ) : (
+          <>
+            <Drawer.Screen name="Login" component={Login} />
+            <Drawer.Screen
+              name="Signup"
+              component={Signup}
+              options={{ title: "Sign up" }}
+            />
+          </>
+        )}
       </Drawer.Navigator>
       <Toast />
     </>

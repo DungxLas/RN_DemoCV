@@ -4,9 +4,13 @@ import { useForm, Controller } from "react-hook-form";
 import Toast from "react-native-toast-message";
 import { postLogin } from "../../src/services/apiServices";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { useDispatch } from "react-redux";
+import { doLogin } from "../../src/redux/action/userAction";
 
 const Login = (props) => {
   const { navigation } = props;
+
+  const dispatch = useDispatch();
 
   const {
     control,
@@ -20,6 +24,7 @@ const Login = (props) => {
   const onSubmit = async (data) => {
     const res = await postLogin(data.email, data.password);
     if (res && res.EC === 0) {
+      dispatch(doLogin(res));
       reset();
       navigation.navigate("Layout");
       // Hiển thị thông báo thanh cong
