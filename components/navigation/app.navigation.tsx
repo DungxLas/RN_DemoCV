@@ -4,9 +4,10 @@ import AdminScreen from "../admin/admin";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import React from "react";
 import UserScreen from "../user";
-import SigninScreen from "../signin";
 import AppHeader from "./app.header";
 import Login from "../Auth/Login";
+import Signup from "../Auth/Signup";
+import Toast from "react-native-toast-message";
 
 const HomeLayout = () => {
   const Stack = createStackNavigator<RootStackParamList>();
@@ -42,8 +43,9 @@ const AppNavigation = () => {
           options={{ header: () => <></> }}
         />
         <Drawer.Screen name="Login" component={Login} />
-        <Drawer.Screen name="Signin" component={SigninScreen} />
+        <Drawer.Screen name="Signin" component={Signup} />
       </Drawer.Navigator>
+      <Toast />
     </>
   );
 };

@@ -1,7 +1,7 @@
 import { Button, StyleSheet, Text, View } from "react-native";
 import AppHeader from "./navigation/app.header";
 
-const HomeScreen = (props: any) => {
+const HomeScreen = (props) => {
   const { navigation } = props;
 
   return (

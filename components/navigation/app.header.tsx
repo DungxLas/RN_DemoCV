@@ -1,6 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { Button, StyleSheet, Text, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { StyleSheet, Text, View } from "react-native";
 
 const AppHeader = () => {
   const navigation: any = useNavigation();

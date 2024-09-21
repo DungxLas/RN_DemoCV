@@ -1,7 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View, Modal } from "react-native";
 import { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/Ionicons";
-import Toast from "react-native-toast-message";
 import TableUser from "./tableUser";
 import { getAllUsers } from "../../../src/services/apiServices";
 import ModalAddNewUser from "./CRUD/modal.addNewUser";
@@ -81,7 +80,6 @@ const ManagerUserScreen = () => {
           </View>
         </Modal>
       </View>
-      <Toast />
     </>
   );
 };

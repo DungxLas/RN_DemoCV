@@ -1,10 +1,8 @@
 import React from "react";
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import Toast from "react-native-toast-message";
-import { postLogin } from "../../src/services/apiServices";
 
-const Login = (props) => {
+const Signup = (props) => {
   const { navigation } = props;
   const {
     control,
@@ -13,26 +11,30 @@ const Login = (props) => {
     reset,
   } = useForm();
 
+  //   const handleClose = () => {
+  //     reset();
+  //     //closeModal();
+  //   };
+
   const onSubmit = async (data) => {
-    const res = await postLogin(data.email, data.password);
-    if (res && res.EC === 0) {
-      reset();
-      navigation.navigate("Layout");
-      // Hiển thị thông báo thanh cong
-      Toast.show({
-        type: "success",
-        text1: res.EM,
-        position: "bottom",
-      });
-    }
-    if (res && res.EC !== 0) {
-      // Hiển thị thông báo lỗi
-      Toast.show({
-        type: "error",
-        text1: res.EM,
-        position: "bottom",
-      });
-    }
+    // const dataUser = await postCreateNewUser(data);
+    // if (dataUser && dataUser.EC === 0) {
+    //   // Hiển thị thông báo
+    //   Toast.show({
+    //     type: "success",
+    //     text1: dataUser.EM,
+    //     position: "bottom",
+    //   });
+    //   handleClose(); // Đóng modal
+    // }
+    // if (dataUser && dataUser.EC !== 0) {
+    //   // Hiển thị thông báo lỗi
+    //   Toast.show({
+    //     type: "error",
+    //     text1: dataUser.EM,
+    //     position: "bottom",
+    //   });
+    // }
   };
 
   return (
@@ -98,21 +100,16 @@ const Login = (props) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.textHeader} onPress={() => {}}>
-          <Text style={[styles.label, { color: "#b1afaf" }]}>
-            Forgot password ?
-          </Text>
-        </Pressable>
         <Pressable
           style={styles.textHeader}
-          onPress={() => navigation.navigate("Signin")}
+          onPress={() => navigation.navigate("Login")}
         >
           <Text style={[styles.label, { color: "#b1afaf" }]}>
-            Sign up if you don't have account
+            Do you have account?
           </Text>
         </Pressable>
-        <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.textBtn}>Login</Text>
+        <Pressable style={styles.button} onPress={() => {}}>
+          <Text style={styles.textBtn}>Sign up</Text>
         </Pressable>
       </View>
     </View>
@@ -174,4 +171,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default Signup;

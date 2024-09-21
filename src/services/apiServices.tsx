@@ -56,4 +56,17 @@ const deleteUser = (userId): Promise<ApiResponse | null> => {
   return instance.delete("api/v1/participant", { data: { id: userId } });
 };
 
-export { postCreateNewUser, getAllUsers, pushUpdateUser, deleteUser };
+const postLogin = (userEmail, userPassword): Promise<ApiResponse | null> => {
+  return instance.post("api/v1/login", {
+    email: userEmail,
+    password: userPassword,
+  });
+};
+
+export {
+  postCreateNewUser,
+  getAllUsers,
+  pushUpdateUser,
+  deleteUser,
+  postLogin,
+};
