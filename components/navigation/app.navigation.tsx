@@ -33,7 +33,7 @@ const AppNavigation = () => {
       <Drawer.Navigator
         screenOptions={{
           drawerStyle: {
-            backgroundColor: "#ab2544", // Màu nền tùy chỉnh
+            backgroundColor: "#e67373", // Màu nền tùy chỉnh
           },
         }}
       >
@@ -43,7 +43,13 @@ const AppNavigation = () => {
           options={{ header: () => <></> }}
         />
         <Drawer.Screen name="Login" component={Login} />
-        <Drawer.Screen name="Signin" component={Signup} />
+        <Drawer.Screen
+          name="Signup"
+          options={{
+            title: "Sign up",
+          }}
+          component={Signup}
+        />
       </Drawer.Navigator>
       <Toast />
     </>

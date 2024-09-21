@@ -1,17 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import Toast from "react-native-toast-message";
 import { postLogin } from "../../src/services/apiServices";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const Login = (props) => {
   const { navigation } = props;
+
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
   } = useForm();
+
+  const [isPasswordHidden, setPasswordHidden] = useState(true);
 
   const onSubmit = async (data) => {
     const res = await postLogin(data.email, data.password);
@@ -82,16 +86,29 @@ const Login = (props) => {
           name="password"
           rules={{ required: "Password is required" }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={styles.input}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              placeholder="Password"
-              secureTextEntry
-            />
+            <>
+              <TextInput
+                style={styles.input}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                value={value}
+                placeholder="Password"
+                secureTextEntry={isPasswordHidden}
+              />
+              <Pressable
+                onPress={() => setPasswordHidden(!isPasswordHidden)}
+                style={styles.eyeIcon}
+              >
+                <Icon
+                  name={isPasswordHidden ? "eye-slash" : "eye"}
+                  size={20}
+                  color="#000"
+                />
+              </Pressable>
+            </>
           )}
         />
+
         {errors.password && (
           <Text style={styles.error}>{errors.password.message as string}</Text>
         )}
@@ -105,7 +122,7 @@ const Login = (props) => {
         </Pressable>
         <Pressable
           style={styles.textHeader}
-          onPress={() => navigation.navigate("Signin")}
+          onPress={() => navigation.navigate("Signup")}
         >
           <Text style={[styles.label, { color: "#b1afaf" }]}>
             Sign up if you don't have account
@@ -141,11 +158,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     padding: 10,
     borderRadius: 5,
-  },
-  picker: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
+    paddingRight: 40,
   },
   error: {
     color: "red",
@@ -171,6 +184,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 0.25,
     color: "white",
+  },
+
+  eyeIcon: {
+    position: "absolute",
+    right: 10,
+    top: "55%",
   },
 });
 

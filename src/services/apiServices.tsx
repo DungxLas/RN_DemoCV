@@ -63,10 +63,23 @@ const postLogin = (userEmail, userPassword): Promise<ApiResponse | null> => {
   });
 };
 
+const postRegister = (
+  userEmail,
+  userName,
+  userPassword
+): Promise<ApiResponse | null> => {
+  return instance.post("api/v1/register", {
+    email: userEmail,
+    username: userName,
+    password: userPassword,
+  });
+};
+
 export {
   postCreateNewUser,
   getAllUsers,
   pushUpdateUser,
   deleteUser,
   postLogin,
+  postRegister,
 };
