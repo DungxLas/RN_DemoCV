@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import Toast from "react-native-toast-message";
 import { postLogin } from "../../src/services/apiServices";
@@ -21,7 +28,11 @@ const Login = (props) => {
 
   const [isPasswordHidden, setPasswordHidden] = useState(true);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const onSubmit = async (data) => {
+    setIsLoading(true);
+
     const res = await postLogin(data.email, data.password);
     if (res && res.EC === 0) {
       dispatch(doLogin(res));
@@ -42,6 +53,8 @@ const Login = (props) => {
         position: "bottom",
       });
     }
+
+    setIsLoading(false);
   };
 
   return (
@@ -125,16 +138,26 @@ const Login = (props) => {
             Forgot password ?
           </Text>
         </Pressable>
-        <Pressable
-          style={styles.textHeader}
-          onPress={() => navigation.navigate("Signup")}
-        >
-          <Text style={[styles.label, { color: "#b1afaf" }]}>
-            Sign up if you don't have account
+        <Text style={[styles.label, styles.textHeader, { color: "#b1afaf" }]}>
+          Don't have an account yet?{" "}
+          <Text
+            style={{ color: "#625f5f", textDecorationLine: "underline" }}
+            onPress={() => navigation.navigate("Signup")}
+          >
+            {" "}
+            Sign up
           </Text>
-        </Pressable>
-        <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.textBtn}>Login</Text>
+        </Text>
+        <Pressable
+          style={styles.button}
+          onPress={handleSubmit(onSubmit)}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#ffffff" />
+          ) : (
+            <Text style={styles.textBtn}>Login</Text>
+          )}
         </Pressable>
       </View>
     </View>

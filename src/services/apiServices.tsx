@@ -75,6 +75,14 @@ const postRegister = (
   });
 };
 
+const getQuizByUser = (): Promise<ApiResponse | null> => {
+  return instance.get("/api/v1/quiz-by-participant");
+};
+
+const getDataQuiz = (id): Promise<ApiResponse | null> => {
+  return instance.get(`/api/v1/questions-by-quiz?quizId=${id}`);
+};
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -82,4 +90,6 @@ export {
   deleteUser,
   postLogin,
   postRegister,
+  getQuizByUser,
+  getDataQuiz,
 };

@@ -3,13 +3,13 @@ import HomeScreen from "../home";
 import AdminScreen from "../admin/admin";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import React from "react";
-import UserScreen from "../user";
 import AppHeader from "./app.header";
 import Login from "../Auth/Login";
 import Signup from "../Auth/Signup";
 import Toast from "react-native-toast-message";
 import { useSelector } from "react-redux";
-import { View, Text } from "react-native";
+import ListQuiz from "../User/ListQuiz";
+import DetailQuiz from "../User/DetailQuiz";
 
 const HomeLayout = () => {
   const Stack = createStackNavigator<RootStackParamList>();
@@ -23,7 +23,8 @@ const HomeLayout = () => {
         options={{ header: () => <AppHeader /> }}
       />
       <Stack.Screen name="Admin" component={AdminScreen} />
-      <Stack.Screen name="User" component={UserScreen} />
+      <Stack.Screen name="User" component={ListQuiz} />
+      <Stack.Screen name="DetailQuiz" component={DetailQuiz} />
     </Stack.Navigator>
   );
 };
@@ -42,13 +43,6 @@ const AppNavigation = () => {
             backgroundColor: "#e67373", // Màu nền tùy chỉnh
           },
         }}
-        // drawerContent={() => (
-        //   <View style={{ flex: 1, padding: 20 }}>
-        //     <Text>
-        //       Hello, {isAuthenticated ? account?.username : "Who are you?"} {}
-        //     </Text>
-        //   </View>
-        // )}
       >
         <Drawer.Screen
           name="Layout"
