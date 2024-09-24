@@ -12,11 +12,15 @@ import { getDataQuiz, getQuizByUser } from "../../src/services/apiServices";
 import _ from "lodash";
 import Timer from "./Timer";
 import HeaderQuiz from "./HeaderQuiz";
+import { CheckBox } from "rn-inkpad";
+import Question from "./Question";
 
 const DetailQuiz = (props) => {
   const { route, navigation } = props;
   const { quizID, quizTitle } = route.params;
-  //   const [arrQuiz, setArrQuiz] = useState([]);
+
+  const [dataQuiz, setDataQuiz] = useState([]);
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
     fetchQuestions();
@@ -24,7 +28,6 @@ const DetailQuiz = (props) => {
 
   const fetchQuestions = async () => {
     const res = await getDataQuiz(quizID);
-    //console.log(res);
 
     if (res && res.EC === 0) {
       let raw = res.DT;
@@ -43,12 +46,28 @@ const DetailQuiz = (props) => {
             answers.push(item.answers);
           });
 
-          return { questionId: key, data: answers, questionDescription, image };
+          return {
+            questionId: key,
+            answers: answers,
+            questionDescription,
+            image,
+          };
         })
         .value();
-      console.log(data);
+      setDataQuiz(data);
     }
     if (res && res.EC !== 0) {
+    }
+  };
+
+  const handlePrev = () => {
+    if (index - 1 < 0) return;
+    setIndex(index - 1);
+  };
+
+  const handleNext = () => {
+    if (dataQuiz && dataQuiz.length > index + 1) {
+      setIndex(index + 1);
     }
   };
 
@@ -58,16 +77,52 @@ const DetailQuiz = (props) => {
       <View style={styles.timerContainer}>
         <Timer />
       </View>
-      <View style={styles.quizContainer}>
-        <Text>Question</Text>
-        <Text>A</Text>
-        <Text>B</Text>
-        <Text>C</Text>
-      </View>
+      {dataQuiz && dataQuiz.length > 0 ? (
+        <View style={styles.quizContainer}>
+          {dataQuiz[index].image && (
+            <View style={styles.userImageContainer}>
+              <Image
+                style={styles.userImage}
+                source={{
+                  uri: `data:image/jpeg;base64,${dataQuiz[index].image}`,
+                }}
+              />
+            </View>
+          )}
+
+          <Text>
+            Question {index + 1}: {dataQuiz[index].questionDescription}
+          </Text>
+          {dataQuiz[index].answers &&
+            dataQuiz[index].answers.length &&
+            dataQuiz[index].answers.map((item, index) => {
+              return (
+                <View style={styles.row} key={`answer-${index}`}>
+                  <Question data={item.description} />
+                </View>
+              );
+            })}
+        </View>
+      ) : (
+        <View style={styles.quizContainer}>
+          <Text>Opp! Nothing quiz</Text>
+        </View>
+      )}
+
       <View style={styles.buttonContainer}>
-        <Button title="Prev" color="#4ea127" onPress={() => {}} />
+        <Button
+          title="Prev"
+          color="#4ea127"
+          onPress={handlePrev}
+          disabled={index === 0}
+        />
         <View style={{ width: 20 }} />
-        <Button title="Next" color="#4ea127" onPress={() => {}} />
+        <Button
+          title="Next"
+          color="#4ea127"
+          onPress={handleNext}
+          disabled={index + 1 === dataQuiz.length}
+        />
       </View>
     </View>
   );
@@ -93,6 +148,22 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "center",
     top: 50,
+  },
+  userImageContainer: {
+    flex: 0.5,
+    // overflow: "hidden",
+    // borderTopLeftRadius: 20,
+    // borderBottomLeftRadius: 20,
+  },
+  userImage: {
+    width: 100,
+    height: 100,
+  },
+  row: {
+    flexDirection: "row",
+  },
+  label: {
+    color: "white",
   },
 });
 
