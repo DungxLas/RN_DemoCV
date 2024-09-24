@@ -53,7 +53,10 @@ const ListQuiz = (props) => {
           <Pressable
             style={{ borderRadius: 10, backgroundColor: "#009dff" }}
             onPress={() => {
-              navigation.navigate("DetailQuiz", { quizID: item.id });
+              navigation.navigate("DetailQuiz", {
+                quizID: item.id,
+                quizTitle: item.description,
+              });
             }}
           >
             <Text

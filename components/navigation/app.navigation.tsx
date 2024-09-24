@@ -24,7 +24,11 @@ const HomeLayout = () => {
       />
       <Stack.Screen name="Admin" component={AdminScreen} />
       <Stack.Screen name="User" component={ListQuiz} />
-      <Stack.Screen name="DetailQuiz" component={DetailQuiz} />
+      <Stack.Screen
+        name="DetailQuiz"
+        options={{ headerShown: false }}
+        component={DetailQuiz}
+      />
     </Stack.Navigator>
   );
 };

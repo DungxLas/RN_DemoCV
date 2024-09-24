@@ -10,10 +10,12 @@ import {
 } from "react-native";
 import { getDataQuiz, getQuizByUser } from "../../src/services/apiServices";
 import _ from "lodash";
+import Timer from "./Timer";
+import HeaderQuiz from "./HeaderQuiz";
 
 const DetailQuiz = (props) => {
   const { route, navigation } = props;
-  const { quizID } = route.params;
+  const { quizID, quizTitle } = route.params;
   //   const [arrQuiz, setArrQuiz] = useState([]);
 
   useEffect(() => {
@@ -50,90 +52,47 @@ const DetailQuiz = (props) => {
     }
   };
 
-  //   const renderItem = ({ item }) => {
-  //     return (
-  //       <View style={styles.userContainer}>
-  //         <View style={styles.userImageContainer}>
-  //           <Image
-  //             style={styles.userImage}
-  //             resizeMode="stretch"
-  //             source={{ uri: `data:image/jpeg;base64,${item.image}` }}
-  //           />
-  //         </View>
-  //         <View style={styles.userContent}>
-  //           <Text
-  //             style={{
-  //               fontSize: 18,
-  //               color: "black",
-  //               marginBottom: 10,
-  //             }}
-  //           >
-  //             {item.description}
-  //           </Text>
-  //           <Pressable style={{ borderRadius: 10, backgroundColor: "#009dff" }}>
-  //             <Text
-  //               style={{
-  //                 fontSize: 16,
-  //                 color: "white",
-  //                 paddingVertical: 5,
-  //                 paddingHorizontal: 10,
-  //               }}
-  //             >
-  //               Start Now
-  //             </Text>
-  //           </Pressable>
-  //         </View>
-  //       </View>
-  //     );
-  //   };
-
   return (
-    <>
-      {/* {arrQuiz && arrQuiz.length > 0 && (
-        <FlatList
-          style={{ marginTop: 20, marginHorizontal: 15 }}
-          data={arrQuiz}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-        />
-      )}
-      {arrQuiz && arrQuiz.length === 0 && (
-        <View
-          style={{
-            flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text>You don't have any quiz now</Text>
-        </View>
-      )} */}
-    </>
+    <View style={{ flex: 1 }}>
+      <HeaderQuiz title={quizTitle} />
+      <View style={styles.timerContainer}>
+        <Timer />
+      </View>
+      <View style={styles.quizContainer}>
+        <Text>Question</Text>
+        <Text>A</Text>
+        <Text>B</Text>
+        <Text>C</Text>
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button title="Prev" color="#4ea127" onPress={() => {}} />
+        <View style={{ width: 20 }} />
+        <Button title="Next" color="#4ea127" onPress={() => {}} />
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  userContainer: {
-    width: "100%",
-    height: 300,
-    marginBottom: 20,
-    backgroundColor: "#d7d7d7",
+  timerContainer: {
+    flex: 0.15,
+    backgroundColor: "#e05527",
+    paddingBottom: 10,
+  },
+  quizContainer: {
+    flex: 0.55,
+    backgroundColor: "#763d3d",
+    margin: 10,
     borderRadius: 20,
-  },
-  userImageContainer: {
-    flex: 0.65,
-    overflow: "hidden",
-  },
-  userImage: {
-    width: "100%",
-    height: 250,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  userContent: {
-    flex: 0.35,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonContainer: {
+    flex: 0.3,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "center",
+    top: 50,
   },
 });
 
