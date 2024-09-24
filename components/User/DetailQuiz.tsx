@@ -9,6 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import { getDataQuiz, getQuizByUser } from "../../src/services/apiServices";
+import _ from "lodash";
 
 const DetailQuiz = (props) => {
   const { route, navigation } = props;
@@ -21,10 +22,29 @@ const DetailQuiz = (props) => {
 
   const fetchQuestions = async () => {
     const res = await getDataQuiz(quizID);
-    console.log(quizID);
-    console.log(res);
+    //console.log(res);
 
     if (res && res.EC === 0) {
+      let raw = res.DT;
+      let data = _.chain(raw)
+        .groupBy("id")
+        .map((value, key) => {
+          let answers = [];
+          let questionDescription,
+            image = null;
+
+          value.forEach((item, index) => {
+            if (index === 0) {
+              questionDescription = item.description;
+              image = item.image;
+            }
+            answers.push(item.answers);
+          });
+
+          return { questionId: key, data: answers, questionDescription, image };
+        })
+        .value();
+      console.log(data);
     }
     if (res && res.EC !== 0) {
     }
