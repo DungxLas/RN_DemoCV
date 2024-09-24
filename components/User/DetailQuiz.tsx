@@ -12,8 +12,7 @@ import { getDataQuiz, getQuizByUser } from "../../src/services/apiServices";
 import _ from "lodash";
 import Timer from "./Timer";
 import HeaderQuiz from "./HeaderQuiz";
-import { CheckBox } from "rn-inkpad";
-import Question from "./Question";
+import { CheckBox } from "react-native-elements";
 
 const DetailQuiz = (props) => {
   const { route, navigation } = props;
@@ -31,6 +30,7 @@ const DetailQuiz = (props) => {
 
     if (res && res.EC === 0) {
       let raw = res.DT;
+
       let data = _.chain(raw)
         .groupBy("id")
         .map((value, key) => {
@@ -43,6 +43,7 @@ const DetailQuiz = (props) => {
               questionDescription = item.description;
               image = item.image;
             }
+            item.answers.isSelected = false;
             answers.push(item.answers);
           });
 
@@ -54,6 +55,7 @@ const DetailQuiz = (props) => {
           };
         })
         .value();
+
       setDataQuiz(data);
     }
     if (res && res.EC !== 0) {
@@ -69,6 +71,31 @@ const DetailQuiz = (props) => {
     if (dataQuiz && dataQuiz.length > index + 1) {
       setIndex(index + 1);
     }
+  };
+
+  const handleCheckbox = (answerId, questionId) => {
+    let dataQuizClone = _.cloneDeep(dataQuiz);
+    let question = dataQuizClone.find(
+      (item) => +item.questionId === +questionId
+    );
+    if (question && question.answers) {
+      let b = question.answers.map((item) => {
+        if (+item.id === +answerId) {
+          item.isSelected = !item.isSelected;
+        }
+        return item;
+      });
+
+      question.answers = b;
+    }
+    let index = dataQuizClone.findIndex(
+      (item) => +item.questionId === +questionId
+    );
+    if (index > -1) {
+      dataQuizClone[index] = question;
+      setDataQuiz(dataQuizClone);
+    }
+    //console.log(dataQuiz);
   };
 
   return (
@@ -89,19 +116,27 @@ const DetailQuiz = (props) => {
               />
             </View>
           )}
-
-          <Text>
-            Question {index + 1}: {dataQuiz[index].questionDescription}
-          </Text>
-          {dataQuiz[index].answers &&
-            dataQuiz[index].answers.length &&
-            dataQuiz[index].answers.map((item, index) => {
-              return (
-                <View style={styles.row} key={`answer-${index}`}>
-                  <Question data={item.description} />
-                </View>
-              );
-            })}
+          <View>
+            <Text style={{ color: "white", fontSize: 20 }}>
+              Question {index + 1}: {dataQuiz[index].questionDescription}
+            </Text>
+            {dataQuiz[index].answers &&
+              dataQuiz[index].answers.length &&
+              dataQuiz[index].answers.map((item, i) => {
+                return (
+                  <View style={styles.row} key={`answer-${i}`}>
+                    <CheckBox
+                      checked={item.isSelected}
+                      onPress={() => {
+                        console.log(item);
+                        handleCheckbox(item.id, dataQuiz[index].questionId);
+                      }}
+                      title={item.description}
+                    />
+                  </View>
+                );
+              })}
+          </View>
         </View>
       ) : (
         <View style={styles.quizContainer}>
@@ -140,7 +175,7 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 20,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-around",
   },
   buttonContainer: {
     flex: 0.3,
@@ -151,13 +186,10 @@ const styles = StyleSheet.create({
   },
   userImageContainer: {
     flex: 0.5,
-    // overflow: "hidden",
-    // borderTopLeftRadius: 20,
-    // borderBottomLeftRadius: 20,
   },
   userImage: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
   },
   row: {
     flexDirection: "row",
