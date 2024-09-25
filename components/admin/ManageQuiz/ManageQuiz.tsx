@@ -2,6 +2,8 @@ import { Picker } from "@react-native-picker/picker";
 import { useForm, Controller } from "react-hook-form";
 import { Pressable, StyleSheet, TextInput, View, Text } from "react-native";
 import ImagePicker from "../imagePicker";
+import { postCreateNewQuiz } from "../../../src/services/apiServices";
+import Toast from "react-native-toast-message";
 
 const ManageQuiz = (props) => {
   const {
@@ -12,41 +14,41 @@ const ManageQuiz = (props) => {
   } = useForm();
 
   const onSubmit = async (data) => {
-    //   const dataUser = await postCreateNewUser(data);
-    //   if (dataUser && dataUser.EC === 0) {
-    //     // Hiển thị thông báo
-    //     Toast.show({
-    //       type: "success",
-    //       text1: dataUser.EM,
-    //       position: "bottom",
-    //     });
-    //     handleClose(); // Đóng modal
-    //     await fetchListUsers();
-    //   }
-    //   if (dataUser && dataUser.EC !== 0) {
-    //     // Hiển thị thông báo lỗi
-    //     Toast.show({
-    //       type: "error",
-    //       text1: dataUser.EM,
-    //       position: "bottom",
-    //     });
-    //   }
+    console.log(data);
+    const res = await postCreateNewQuiz(data);
+    if (res && res.EC === 0) {
+      reset();
+      // Hiển thị thông báo
+      Toast.show({
+        type: "success",
+        text1: res.EM,
+        position: "bottom",
+      });
+    }
+    if (res && res.EC !== 0) {
+      // Hiển thị thông báo lỗi
+      Toast.show({
+        type: "error",
+        text1: res.EM,
+        position: "bottom",
+      });
+    }
+    console.log(res);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, { textAlign: "center" }]}> Add new quiz</Text>
+      <Text style={[styles.label, { textAlign: "center", fontSize: 24 }]}>
+        {" "}
+        Add new quiz
+      </Text>
       <View style={styles.fieldContainer}>
         <Text style={styles.label}>Name</Text>
         <Controller
           control={control}
-          name="email"
+          name="name"
           rules={{
-            required: "Email is required",
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Invalid email address",
-            },
+            required: "Name is required",
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
@@ -65,8 +67,8 @@ const ManageQuiz = (props) => {
         <Text style={styles.label}>Description</Text>
         <Controller
           control={control}
-          name="password"
-          rules={{ required: "Password is required" }}
+          name="description"
+          rules={{ required: "Description is required" }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               style={styles.input}
@@ -104,7 +106,7 @@ const ManageQuiz = (props) => {
         <Text style={styles.label}>Quiz type</Text>
         <Controller
           control={control}
-          name="role"
+          name="type"
           rules={{ required: "Role is required" }}
           render={({ field: { onChange, onBlur, value } }) => (
             <View style={styles.picker}>
@@ -140,12 +142,12 @@ const ManageQuiz = (props) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.button} onPress={() => handleSubmit(onSubmit)}>
-          <Text style={styles.text}>Add User</Text>
+        <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
+          <Text style={styles.text}>Save</Text>
         </Pressable>
-        <Pressable style={styles.button} onPress={() => {}}>
+        {/* <Pressable style={styles.button} onPress={() => {}}>
           <Text style={styles.text}>Close</Text>
-        </Pressable>
+        </Pressable> */}
       </View>
     </View>
   );
@@ -155,9 +157,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 20,
-    // padding: 20,
-    // backgroundColor: "white",
-    // borderRadius: 10,
   },
   form: {
     flex: 1,
@@ -187,7 +186,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    //alignItems: "center",
     marginTop: 10,
   },
   button: {
@@ -198,14 +196,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: "black",
+    backgroundColor: "#ffbf00",
   },
   text: {
     fontSize: 16,
     lineHeight: 21,
     fontWeight: "bold",
     letterSpacing: 0.25,
-    color: "white",
   },
 });
 

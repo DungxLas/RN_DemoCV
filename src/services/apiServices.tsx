@@ -87,6 +87,24 @@ const postSubmitQuiz = (data): Promise<ApiResponse | null> => {
   return instance.post("api/v1/quiz-submit", { ...data });
 };
 
+const postCreateNewQuiz = (data): Promise<ApiResponse | null> => {
+  const quizData = new FormData();
+  quizData.append("description", data.description);
+  quizData.append("name", data.name);
+  quizData.append("difficulty", data.type);
+  quizData.append("quizImage", {
+    uri: data.imageUrl,
+    type: "image/jpeg",
+    name: "userImage.jpg",
+  } as any);
+
+  return instance.post("api/v1/quiz", quizData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -97,4 +115,5 @@ export {
   getQuizByUser,
   getDataQuiz,
   postSubmitQuiz,
+  postCreateNewQuiz,
 };
