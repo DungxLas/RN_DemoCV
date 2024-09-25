@@ -1,19 +1,19 @@
+import { Picker } from "@react-native-picker/picker";
+import { useForm, Controller } from "react-hook-form";
 import {
+  Pressable,
+  StyleSheet,
+  TextInput,
   View,
   Text,
-  TextInput,
-  StyleSheet,
-  Pressable,
   ScrollView,
 } from "react-native";
-import { useForm, Controller } from "react-hook-form";
-import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
-import { postCreateNewUser } from "../../../../src/services/apiServices";
+import { postCreateNewQuiz } from "../../../../src/services/apiServices";
 import ImagePicker from "../../imagePicker";
 
-const ModalAddNewUser = (props) => {
-  const { closeModal, fetchListUsers } = props;
+const ModalAddNewQuiz = (props) => {
+  const { closeModal, fetchListQuiz } = props;
 
   const {
     control,
@@ -28,26 +28,24 @@ const ModalAddNewUser = (props) => {
   };
 
   const onSubmit = async (data) => {
-    const dataUser = await postCreateNewUser(data);
-
-    if (dataUser && dataUser.EC === 0) {
+    const res = await postCreateNewQuiz(data);
+    if (res && res.EC === 0) {
       // Hiển thị thông báo
       Toast.show({
         type: "success",
-        text1: dataUser.EM,
+        text1: res.EM,
         position: "bottom",
       });
 
-      handleClose(); // Đóng modal
+      reset();
 
-      await fetchListUsers();
+      // await fetchListUsers();
     }
-
-    if (dataUser && dataUser.EC !== 0) {
+    if (res && res.EC !== 0) {
       // Hiển thị thông báo lỗi
       Toast.show({
         type: "error",
-        text1: dataUser.EM,
+        text1: res.EM,
         position: "bottom",
       });
     }
@@ -57,16 +55,12 @@ const ModalAddNewUser = (props) => {
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>Name</Text>
           <Controller
             control={control}
-            name="email"
+            name="name"
             rules={{
-              required: "Email is required",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Invalid email address",
-              },
+              required: "Name is required",
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
@@ -74,67 +68,36 @@ const ModalAddNewUser = (props) => {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
-                placeholder="Enter email"
+                placeholder="Your quiz name"
                 keyboardType="email-address"
               />
             )}
           />
-          {errors.email && (
-            <Text style={styles.error}>{errors.email.message as string}</Text>
-          )}
         </View>
 
         <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Password</Text>
+          <Text style={styles.label}>Description</Text>
           <Controller
             control={control}
-            name="password"
-            rules={{ required: "Password is required" }}
+            name="description"
+            rules={{ required: "Description is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 style={styles.input}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 value={value}
-                placeholder="Password"
+                placeholder="Your Description"
               />
             )}
           />
-          {errors.password && (
-            <Text style={styles.error}>
-              {errors.password.message as string}
-            </Text>
-          )}
         </View>
 
         <View style={styles.fieldContainer}>
-          <Text style={styles.label}>User Name</Text>
+          <Text style={styles.label}>Quiz type</Text>
           <Controller
             control={control}
-            name="userName"
-            rules={{ required: "User Name is required" }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                value={value}
-                placeholder="Enter User Name"
-              />
-            )}
-          />
-          {errors.userName && (
-            <Text style={styles.error}>
-              {errors.userName.message as string}
-            </Text>
-          )}
-        </View>
-
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Role</Text>
-          <Controller
-            control={control}
-            name="role"
+            name="type"
             rules={{ required: "Role is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <View style={styles.picker}>
@@ -145,15 +108,13 @@ const ModalAddNewUser = (props) => {
                   // style={styles.picker}
                   mode="dropdown"
                 >
-                  <Picker.Item label="User" value="USER" />
-                  <Picker.Item label="Admin" value="ADMIN" />
+                  <Picker.Item label="Easy" value="EASY" />
+                  <Picker.Item label="Medium" value="MEDIUM" />
+                  <Picker.Item label="Hard" value="HARD" />
                 </Picker>
               </View>
             )}
           />
-          {errors.role && (
-            <Text style={styles.error}>{errors.role.message as string}</Text>
-          )}
         </View>
 
         <View style={styles.fieldContainer}>
@@ -173,7 +134,7 @@ const ModalAddNewUser = (props) => {
 
         <View style={styles.buttonContainer}>
           <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-            <Text style={styles.text}>Add User</Text>
+            <Text style={styles.text}>Save</Text>
           </Pressable>
           <Pressable style={styles.button} onPress={() => handleClose()}>
             <Text style={styles.text}>Close</Text>
@@ -220,7 +181,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    //alignItems: "center",
     marginTop: 10,
   },
   button: {
@@ -238,8 +198,7 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     fontWeight: "bold",
     letterSpacing: 0.25,
-    color: "white",
   },
 });
 
-export default ModalAddNewUser;
+export default ModalAddNewQuiz;

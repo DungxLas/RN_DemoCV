@@ -1,25 +1,33 @@
 import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 import { SwipeListView } from "react-native-swipe-list-view";
-import AlertDeleteUser from "./CRUD/alert.deleteUser";
+import AlertDeleteQuiz from "./CRUD/alert.deleteQuiz";
 
-const TableUser = (props) => {
-  const { listUsers, openModal, fetchListUsers } = props;
+const TableQuiz = (props) => {
+  const { listQuizs, openModal, fetchListQuizs } = props;
 
   const renderItem = ({ item }) => {
     return (
-      <View style={styles.userContainer}>
-        <View style={styles.userImageContainer}>
+      <View style={styles.quizContainer}>
+        <View style={styles.quizImageContainer}>
           <Image
-            style={styles.userImage}
+            style={styles.quizImage}
             source={{ uri: `data:image/jpeg;base64,${item.image}` }}
           />
         </View>
-        <View style={styles.userContent}>
-          <Text>ID: {item.id}</Text>
-          <Text>Username:{item.username}</Text>
-          <Text>Email: {item.email}</Text>
-          <Text>Role: {item.role}</Text>
+        <View style={styles.quizContent}>
+          <Text numberOfLines={1} ellipsizeMode="tail">
+            ID: {item.id}
+          </Text>
+          <Text numberOfLines={1} ellipsizeMode="tail">
+            Name:{item.name}
+          </Text>
+          <Text numberOfLines={1} ellipsizeMode="tail">
+            Description: {item.description}
+          </Text>
+          <Text numberOfLines={1} ellipsizeMode="tail">
+            Type: {item.difficulty}
+          </Text>
         </View>
       </View>
     );
@@ -38,7 +46,7 @@ const TableUser = (props) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.backButton, styles.backRightButton]}
-          onPress={() => AlertDeleteUser(item, fetchListUsers)}
+          onPress={() => AlertDeleteQuiz(item, fetchListQuizs)}
         >
           <Text style={styles.backText}>Delete</Text>
         </TouchableOpacity>
@@ -48,9 +56,9 @@ const TableUser = (props) => {
 
   return (
     <>
-      {listUsers && listUsers.length > 0 ? (
+      {listQuizs && listQuizs.length > 0 ? (
         <SwipeListView
-          data={listUsers}
+          data={listQuizs}
           renderItem={renderItem}
           renderHiddenItem={renderHiddenItem}
           rightOpenValue={-150} // Kích thước mở các hành động bên phải
@@ -64,7 +72,7 @@ const TableUser = (props) => {
 };
 
 const styles = StyleSheet.create({
-  userContainer: {
+  quizContainer: {
     flexDirection: "row",
     width: "100%",
     height: 100,
@@ -72,17 +80,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#bcb2b2",
     borderRadius: 20,
   },
-  userImageContainer: {
+  quizImageContainer: {
     flex: 0.35,
     overflow: "hidden",
     borderTopLeftRadius: 20,
     borderBottomLeftRadius: 20,
   },
-  userImage: {
+  quizImage: {
     width: "100%",
     height: "100%",
   },
-  userContent: {
+  quizContent: {
     flex: 0.65,
     flexDirection: "column",
     marginLeft: 10,
@@ -123,4 +131,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TableUser;
+export default TableQuiz;

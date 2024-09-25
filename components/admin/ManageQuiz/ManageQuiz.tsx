@@ -1,208 +1,112 @@
-import { Picker } from "@react-native-picker/picker";
-import { useForm, Controller } from "react-hook-form";
-import { Pressable, StyleSheet, TextInput, View, Text } from "react-native";
-import ImagePicker from "../imagePicker";
-import { postCreateNewQuiz } from "../../../src/services/apiServices";
-import Toast from "react-native-toast-message";
+import { StyleSheet, View, Text, Modal, TouchableOpacity } from "react-native";
+import { useState, useEffect } from "react";
+import { Icon } from "react-native-elements";
+import ModalAddNewQuiz from "./CRUD/modal.addNewQuiz";
+import TableQuiz from "./TableQuiz";
+import { getAllQuizForAdmin } from "../../../src/services/apiServices";
+import ModalUpdateQuiz from "./CRUD/modal.updateQuiz";
 
 const ManageQuiz = (props) => {
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm();
+  const [showModalCreateQuiz, setShowModalCreateQuiz] = useState(false);
 
-  const onSubmit = async (data) => {
-    console.log(data);
-    const res = await postCreateNewQuiz(data);
-    if (res && res.EC === 0) {
-      reset();
-      // Hiển thị thông báo
-      Toast.show({
-        type: "success",
-        text1: res.EM,
-        position: "bottom",
-      });
+  const [showModalUpdateQuiz, setShowModalUpdateQuiz] = useState(false);
+
+  const [listQuizs, setListQuizs] = useState([]);
+
+  const [quizUpdate, setQuizUpdate] = useState({});
+
+  useEffect(() => {
+    fetchListQuizs();
+  }, []);
+
+  const fetchListQuizs = async () => {
+    let res = await getAllQuizForAdmin();
+    if (res.EC === 0) {
+      setListQuizs(res.DT);
     }
-    if (res && res.EC !== 0) {
-      // Hiển thị thông báo lỗi
-      Toast.show({
-        type: "error",
-        text1: res.EM,
-        position: "bottom",
-      });
-    }
-    console.log(res);
+  };
+
+  const openModalToUpdate = (quiz) => {
+    setShowModalUpdateQuiz(true);
+    setQuizUpdate(quiz);
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.label, { textAlign: "center", fontSize: 24 }]}>
-        {" "}
-        Add new quiz
-      </Text>
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Name</Text>
-        <Controller
-          control={control}
-          name="name"
-          rules={{
-            required: "Name is required",
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={styles.input}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              placeholder="Your quiz name"
-              keyboardType="email-address"
-            />
-          )}
+    <>
+      <View style={styles.container}>
+        <TableQuiz
+          listQuizs={listQuizs}
+          openModal={openModalToUpdate}
+          fetchListQuizs={fetchListQuizs}
         />
-      </View>
 
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Description</Text>
-        <Controller
-          control={control}
-          name="description"
-          rules={{ required: "Description is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={styles.input}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              placeholder="Your Description"
-            />
-          )}
-        />
-      </View>
+        {/* Nút để mở modal */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => setShowModalCreateQuiz(true)}
+        >
+          <Icon name="add" size={20} color="white" />
+          <Text style={styles.buttonText}> Add New Quiz</Text>
+        </TouchableOpacity>
 
-      {/* <View style={styles.fieldContainer}>
-        <Text style={styles.label}>User Name</Text>
-        <Controller
-          control={control}
-          name="userName"
-          rules={{ required: "User Name is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              style={styles.input}
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              placeholder="Enter User Name"
-            />
-          )}
-        />
-        {errors.userName && (
-          <Text style={styles.error}>{errors.userName.message as string}</Text>
-        )}
-      </View> */}
-
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Quiz type</Text>
-        <Controller
-          control={control}
-          name="type"
-          rules={{ required: "Role is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <View style={styles.picker}>
-              <Picker
-                selectedValue={value}
-                onValueChange={(itemValue) => onChange(itemValue)}
-                onBlur={onBlur}
-                // style={styles.picker}
-                mode="dropdown"
-              >
-                <Picker.Item label="Easy" value="EASY" />
-                <Picker.Item label="Medium" value="MEDIUM" />
-                <Picker.Item label="Hard" value="HARD" />
-              </Picker>
-            </View>
-          )}
-        />
+        {/* Modal */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModalCreateQuiz}
+          onRequestClose={() => setShowModalCreateQuiz(false)} // Đóng modal khi người dùng ấn ngoài modal
+        >
+          <View style={styles.modalContainer}>
+            <ModalAddNewQuiz closeModal={() => setShowModalCreateQuiz(false)} />
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModalUpdateQuiz}
+          onRequestClose={() => setShowModalUpdateQuiz(false)} // Đóng modal khi người dùng ấn ngoài modal
+        >
+          <View style={styles.modalContainer}>
+            {quizUpdate && (
+              <ModalUpdateQuiz
+                quizUpdate={quizUpdate} // Pass the user data to the modal
+                closeModal={() => setShowModalUpdateQuiz(false)}
+                fetchListQuizs={fetchListQuizs}
+              />
+            )}
+          </View>
+        </Modal>
       </View>
-
-      <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Image</Text>
-        <Controller
-          control={control}
-          name="imageUrl"
-          rules={{ required: "Image is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <ImagePicker
-              onTakeImage={(imageUrl) => onChange(imageUrl)}
-              imageUrl={value}
-            />
-          )}
-        />
-      </View>
-
-      <View style={styles.buttonContainer}>
-        <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-          <Text style={styles.text}>Save</Text>
-        </Pressable>
-        {/* <Pressable style={styles.button} onPress={() => {}}>
-          <Text style={styles.text}>Close</Text>
-        </Pressable> */}
-      </View>
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 20,
-  },
-  form: {
-    flex: 1,
-  },
-  fieldContainer: {
-    marginBottom: 15,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
+    backgroundColor: "#fff",
     padding: 10,
-    borderRadius: 5,
-  },
-  picker: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-  },
-  error: {
-    color: "red",
-    marginTop: 5,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 10,
   },
   button: {
-    width: 100,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: "#ffbf00",
+    alignSelf: "center",
+    backgroundColor: "#007bff",
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 20, // Đặt khoảng cách giữa TableUser và nút
   },
-  text: {
+  buttonText: {
+    color: "white",
     fontSize: 16,
-    lineHeight: 21,
-    fontWeight: "bold",
-    letterSpacing: 0.25,
+    marginLeft: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(204, 203, 203, 0.5)", // Làm mờ nền khi hiện modal
   },
 });
 

@@ -105,6 +105,39 @@ const postCreateNewQuiz = (data): Promise<ApiResponse | null> => {
   });
 };
 
+const getAllQuizForAdmin = (): Promise<ApiResponse | null> => {
+  return instance.get("api/v1/quiz/all");
+};
+
+const pushUpdateQuiz = (
+  id,
+  description,
+  name,
+  type,
+  imageUrl
+): Promise<ApiResponse | null> => {
+  const quizData = new FormData();
+  quizData.append("id", id);
+  quizData.append("description", description);
+  quizData.append("name", name);
+  quizData.append("difficulty", type);
+  quizData.append("userImage", {
+    uri: imageUrl,
+    type: "image/jpeg",
+    name: "userImage.jpg",
+  } as any);
+
+  return instance.put("api/v1/quiz", quizData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+const deleteQuizForAdmin = (id): Promise<ApiResponse | null> => {
+  return instance.delete(`api/v1/quiz/${id}`);
+};
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -116,4 +149,7 @@ export {
   getDataQuiz,
   postSubmitQuiz,
   postCreateNewQuiz,
+  getAllQuizForAdmin,
+  pushUpdateQuiz,
+  deleteQuizForAdmin,
 };
