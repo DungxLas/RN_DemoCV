@@ -11,7 +11,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
 import { pushUpdateUser } from "../../../../src/services/apiServices";
-import ImagePicker from "../imagePicker";
+import ImagePicker from "../../imagePicker";
 
 const ModalUpdateUser = (props) => {
   const { closeModal, userUpdate, fetchListUsers } = props;
