@@ -1,18 +1,11 @@
 import { useEffect, useState } from "react";
-import {
-  View,
-  Button,
-  Text,
-  Image,
-  FlatList,
-  StyleSheet,
-  Pressable,
-} from "react-native";
-import { getDataQuiz, getQuizByUser } from "../../src/services/apiServices";
+import { View, Button, Text, Image, StyleSheet, Modal } from "react-native";
+import { getDataQuiz, postSubmitQuiz } from "../../src/services/apiServices";
 import _ from "lodash";
 import Timer from "./Timer";
 import HeaderQuiz from "./HeaderQuiz";
 import { CheckBox } from "react-native-elements";
+import ModalResult from "./modalResult";
 
 const DetailQuiz = (props) => {
   const { route, navigation } = props;
@@ -20,6 +13,8 @@ const DetailQuiz = (props) => {
 
   const [dataQuiz, setDataQuiz] = useState([]);
   const [index, setIndex] = useState(0);
+  const [showModalResult, setShowModalResult] = useState(false);
+  const [dataResult, setDataResult] = useState();
 
   useEffect(() => {
     fetchQuestions();
@@ -95,7 +90,45 @@ const DetailQuiz = (props) => {
       dataQuizClone[index] = question;
       setDataQuiz(dataQuizClone);
     }
-    //console.log(dataQuiz);
+  };
+  const handleFinishQuiz = async () => {
+    let payload = {
+      quizId: +quizID,
+      answers: [],
+    };
+
+    let a = [];
+    if (dataQuiz && dataQuiz.length > 0) {
+      dataQuiz.forEach((question) => {
+        let questionId = question.questionId;
+        let userAnswerId = [];
+
+        question.answers.forEach((a) => {
+          if (a.isSelected === true) {
+            userAnswerId.push(a);
+          }
+        });
+
+        a.push({
+          questionId: +questionId,
+          userAnswerId: userAnswerId,
+        });
+      });
+
+      payload.answers = a;
+
+      //Submit api
+      const res = await postSubmitQuiz(payload);
+      console.log(res);
+
+      if (res && res.EC === 0) {
+      }
+      if (res && res.EC !== 0) {
+      }
+
+      setDataResult(res as any);
+      setShowModalResult(true);
+    }
   };
 
   return (
@@ -117,7 +150,7 @@ const DetailQuiz = (props) => {
             </View>
           )}
           <View>
-            <Text style={{ color: "white", fontSize: 20 }}>
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
               Question {index + 1}: {dataQuiz[index].questionDescription}
             </Text>
             {dataQuiz[index].answers &&
@@ -128,10 +161,13 @@ const DetailQuiz = (props) => {
                     <CheckBox
                       checked={item.isSelected}
                       onPress={() => {
-                        console.log(item);
                         handleCheckbox(item.id, dataQuiz[index].questionId);
                       }}
                       title={item.description}
+                      checkedColor="green"
+                      uncheckedColor="red"
+                      textStyle={styles.checkboxText}
+                      containerStyle={styles.checkbox}
                     />
                   </View>
                 );
@@ -145,20 +181,37 @@ const DetailQuiz = (props) => {
       )}
 
       <View style={styles.buttonContainer}>
-        <Button
-          title="Prev"
-          color="#4ea127"
-          onPress={handlePrev}
-          disabled={index === 0}
-        />
-        <View style={{ width: 20 }} />
-        <Button
-          title="Next"
-          color="#4ea127"
-          onPress={handleNext}
-          disabled={index + 1 === dataQuiz.length}
-        />
+        <View style={{ flexDirection: "row", marginBottom: 10 }}>
+          <Button
+            title="Prev"
+            color="#4ea127"
+            onPress={handlePrev}
+            disabled={index === 0}
+          />
+          <View style={{ width: 20 }} />
+          <Button
+            title="Next"
+            color="#4ea127"
+            onPress={handleNext}
+            disabled={index + 1 === dataQuiz.length}
+          />
+        </View>
+        <Button title="Finish" color="#b3a700" onPress={handleFinishQuiz} />
       </View>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showModalResult}
+        onRequestClose={() => setShowModalResult(false)} // Đóng modal khi người dùng ấn ngoài modal
+      >
+        <View style={styles.modalContainer}>
+          <ModalResult
+            closeModal={() => setShowModalResult(false)}
+            dataResult={dataResult}
+          />
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -171,7 +224,7 @@ const styles = StyleSheet.create({
   },
   quizContainer: {
     flex: 0.55,
-    backgroundColor: "#763d3d",
+    backgroundColor: "#a18d8d",
     margin: 10,
     borderRadius: 20,
     alignItems: "center",
@@ -179,10 +232,10 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flex: 0.3,
-    flexDirection: "row",
-    alignItems: "flex-start",
+    flexDirection: "column",
+    alignItems: "center",
     justifyContent: "center",
-    top: 50,
+    //top: 50,
   },
   userImageContainer: {
     flex: 0.5,
@@ -192,10 +245,26 @@ const styles = StyleSheet.create({
     height: 200,
   },
   row: {
-    flexDirection: "row",
+    marginVertical: 5,
   },
   label: {
     color: "white",
+  },
+  checkboxText: {
+    color: "black",
+    fontSize: 18,
+  },
+  checkbox: {
+    backgroundColor: "transparent",
+    borderColor: "#a18d8d",
+    padding: 0,
+    margin: 0,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(204, 203, 203, 0.5)", // Làm mờ nền khi hiện modal
   },
 });
 

@@ -83,6 +83,10 @@ const getDataQuiz = (id): Promise<ApiResponse | null> => {
   return instance.get(`/api/v1/questions-by-quiz?quizId=${id}`);
 };
 
+const postSubmitQuiz = (data): Promise<ApiResponse | null> => {
+  return instance.post("api/v1/quiz-submit", { ...data });
+};
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -92,4 +96,5 @@ export {
   postRegister,
   getQuizByUser,
   getDataQuiz,
+  postSubmitQuiz,
 };
