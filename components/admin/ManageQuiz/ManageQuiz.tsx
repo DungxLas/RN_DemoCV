@@ -5,8 +5,14 @@ import ModalAddNewQuiz from "./CRUD/modal.addNewQuiz";
 import TableQuiz from "./TableQuiz";
 import { getAllQuizForAdmin } from "../../../src/services/apiServices";
 import ModalUpdateQuiz from "./CRUD/modal.updateQuiz";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import ManageQuestion from "./ManageQuestion/ManageQuestions";
+import { useNavigation } from "@react-navigation/native";
+import HomeHeader from "../../navigation/HomeHeader";
 
-const ManageQuiz = (props) => {
+const ManageQuizScreen = (props) => {
+  const navigation = useNavigation();
+
   const [showModalCreateQuiz, setShowModalCreateQuiz] = useState(false);
 
   const [showModalUpdateQuiz, setShowModalUpdateQuiz] = useState(false);
@@ -38,6 +44,7 @@ const ManageQuiz = (props) => {
           listQuizs={listQuizs}
           openModal={openModalToUpdate}
           fetchListQuizs={fetchListQuizs}
+          navigation={navigation}
         />
 
         {/* Nút để mở modal */}
@@ -78,6 +85,27 @@ const ManageQuiz = (props) => {
         </Modal>
       </View>
     </>
+  );
+};
+
+const ManageQuiz = () => {
+  const Stack = createNativeStackNavigator();
+
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="ManageQuizScreen"
+        component={ManageQuizScreen}
+        options={{ header: () => <HomeHeader target="Home" title="Admin" /> }}
+      />
+      <Stack.Screen
+        name="ManageQuestion"
+        component={ManageQuestion}
+        options={{
+          header: () => <></>,
+        }}
+      />
+    </Stack.Navigator>
   );
 };
 

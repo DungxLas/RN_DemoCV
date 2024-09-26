@@ -1,14 +1,23 @@
-import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
-
+import {
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 import { SwipeListView } from "react-native-swipe-list-view";
 import AlertDeleteQuiz from "./CRUD/alert.deleteQuiz";
 
 const TableQuiz = (props) => {
-  const { listQuizs, openModal, fetchListQuizs } = props;
+  const { listQuizs, openModal, fetchListQuizs, navigation } = props;
 
   const renderItem = ({ item }) => {
     return (
-      <View style={styles.quizContainer}>
+      <Pressable
+        style={styles.quizContainer}
+        onPress={() => navigation.navigate("ManageQuestion", { quiz: item })}
+      >
         <View style={styles.quizImageContainer}>
           <Image
             style={styles.quizImage}
@@ -29,7 +38,7 @@ const TableQuiz = (props) => {
             Type: {item.difficulty}
           </Text>
         </View>
-      </View>
+      </Pressable>
     );
   };
 

@@ -138,6 +138,10 @@ const deleteQuizForAdmin = (id): Promise<ApiResponse | null> => {
   return instance.delete(`api/v1/quiz/${id}`);
 };
 
+const getQuizWithQA = (quizId): Promise<ApiResponse | null> => {
+  return instance.get(`api/v1/quiz-with-qa/${quizId}`);
+};
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -152,4 +156,5 @@ export {
   getAllQuizForAdmin,
   pushUpdateQuiz,
   deleteQuizForAdmin,
+  getQuizWithQA,
 };

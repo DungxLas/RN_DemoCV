@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import ManagerUserScreen from "./manageUser/managerUser";
 import ManageQuiz from "./ManageQuiz/ManageQuiz";
 import { Ionicons } from "@expo/vector-icons";
+import ManageQuestion from "./ManageQuiz/ManageQuestion/ManageQuestions";
 
 const Tab = createBottomTabNavigator();
 

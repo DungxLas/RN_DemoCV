@@ -5,6 +5,7 @@ import TableUser from "./tableUser";
 import { getAllUsers } from "../../../src/services/apiServices";
 import ModalAddNewUser from "./CRUD/modal.addNewUser";
 import ModalUpdateUser from "./CRUD/modal.updateUser";
+import HomeHeader from "../../navigation/HomeHeader";
 
 const ManagerUserScreen = () => {
   const [showModalCreateUser, setShowModalCreateUser] = useState(false);
@@ -33,6 +34,7 @@ const ManagerUserScreen = () => {
 
   return (
     <>
+      <HomeHeader target="Home" title="Admin" />
       <View style={styles.container}>
         <TableUser
           listUsers={listUsers}

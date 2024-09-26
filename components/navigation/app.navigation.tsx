@@ -10,6 +10,7 @@ import Toast from "react-native-toast-message";
 import { useSelector } from "react-redux";
 import ListQuiz from "../User/ListQuiz";
 import DetailQuiz from "../User/DetailQuiz";
+import HomeHeader from "./HomeHeader";
 
 const HomeLayout = () => {
   const Stack = createStackNavigator<RootStackParamList>();
@@ -22,7 +23,11 @@ const HomeLayout = () => {
         component={HomeScreen}
         options={{ header: () => <AppHeader /> }}
       />
-      <Stack.Screen name="Admin" component={AdminScreen} />
+      <Stack.Screen
+        name="Admin"
+        component={AdminScreen}
+        options={{ header: () => <></> }}
+      />
       <Stack.Screen name="User" component={ListQuiz} />
       <Stack.Screen
         name="DetailQuiz"
