@@ -7,13 +7,12 @@ import {
   Pressable,
   FlatList,
 } from "react-native";
-import { SwipeListView } from "react-native-swipe-list-view";
-import AlertDeleteQuiz from "./CRUD/alert.deleteQuestion";
 import { CheckBox } from "react-native-elements";
 import { Ionicons } from "@expo/vector-icons";
+import AlertDeleteQuestion from "./CRUD/alert.deleteQuestion";
 
 const TableQuestions = (props) => {
-  const { listQuizsQA, openModal, fetchListQuizs, navigation } = props;
+  const { quizId, listQuizsQA, openModalUpdate, fetchListQuizQA } = props;
 
   const renderItem = ({ item }) => {
     return (
@@ -47,8 +46,20 @@ const TableQuestions = (props) => {
           })}
         </View>
         <View style={styles.buttomContainer}>
-          <Ionicons name="trash-bin" size={40} color="red" />
-          <Ionicons name="pencil" size={40} color="blue" />
+          <Ionicons
+            name="trash-bin"
+            size={40}
+            color="red"
+            onPress={() =>
+              AlertDeleteQuestion(quizId, item.id, fetchListQuizQA)
+            }
+          />
+          <Ionicons
+            name="pencil"
+            size={40}
+            color="blue"
+            onPress={() => openModalUpdate(item)}
+          />
         </View>
       </View>
     );

@@ -1,20 +1,32 @@
-import React, { useEffect } from "react";
+import { Picker } from "@react-native-picker/picker";
+import { useForm, Controller } from "react-hook-form";
 import {
+  Pressable,
+  StyleSheet,
+  TextInput,
   View,
   Text,
-  TextInput,
-  StyleSheet,
-  Pressable,
   ScrollView,
 } from "react-native";
-import { useForm, Controller } from "react-hook-form";
-import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
-import { pushUpdateQuiz } from "../../../../src/services/apiServices";
-import ImagePicker from "../../imagePicker";
+import ImagePicker from "../../../imagePicker";
+import { useEffect, useState } from "react";
+import { CheckBox } from "react-native-elements";
+import { Ionicons } from "@expo/vector-icons";
+import "react-native-get-random-values";
+import { v4 as uuidv4 } from "uuid";
+import _ from "lodash";
+import {
+  postCreateNewAnswerForQuestion,
+  postCreateNewQuestionForQuiz,
+} from "../../../../../src/services/apiServices";
 
-const ModalUpdateQuiz = (props) => {
-  const { closeModal, quizUpdate, fetchListQuizs } = props;
+const ModalUpdateQuestion = (props) => {
+  const { closeModal, questionUpdate, fetchListQuizQA } = props;
+
+  const [answers, setAnswers] = useState([
+    // { id: "", description: "", isCorrect: false },
+  ]);
 
   const {
     control,
@@ -25,11 +37,14 @@ const ModalUpdateQuiz = (props) => {
   } = useForm();
 
   useEffect(() => {
-    setValue("name", quizUpdate.name);
-    setValue("description", quizUpdate.description);
-    setValue("type", quizUpdate.difficulty);
-    setValue("imageUrl", `data:image/jpeg;base64,${quizUpdate.image}`);
-  }, [quizUpdate]);
+    setAnswers(questionUpdate.answers);
+
+    setValue("imageUrl", `data:image/jpeg;base64,${questionUpdate.imageFile}`);
+    setValue("descriptionQ", questionUpdate.description);
+    questionUpdate.answers.map((item) => {
+      setValue(`descriptionA${item.id}`, item.description);
+    });
+  }, [questionUpdate]);
 
   const handleClose = () => {
     reset();
@@ -37,68 +52,89 @@ const ModalUpdateQuiz = (props) => {
   };
 
   const onSubmit = async (data) => {
-    const dataQuiz = await pushUpdateQuiz(
-      quizUpdate.id,
-      data.description,
-      data.name,
-      data.type,
-      data.imageUrl
-    );
-
-    console.log(dataQuiz);
-
-    if (dataQuiz && dataQuiz.EC === 0) {
-      // Hiển thị thông báo
-      Toast.show({
-        type: "success",
-        text1: dataQuiz.EM,
-        position: "bottom",
-      });
-
-      handleClose(); // Đóng modal
-
-      await fetchListQuizs();
-    }
-
-    if (dataQuiz && dataQuiz.EC !== 0) {
-      // Hiển thị thông báo lỗi
-      Toast.show({
-        type: "error",
-        text1: dataQuiz.EM,
-        position: "bottom",
-      });
-    }
+    // const newQ = await postCreateNewQuestionForQuiz(
+    //   +quizId,
+    //   data.descriptionQ,
+    //   data.imageUrl
+    // );
+    // for (const answer of answers) {
+    //   await postCreateNewAnswerForQuestion(
+    //     data[`descriptionA${answer.id}`],
+    //     answer.isCorrect,
+    //     newQ.DT.id
+    //   );
+    // }
+    // if (newQ && newQ.EC === 0) {
+    //   // Hiển thị thông báo
+    //   Toast.show({
+    //     type: "success",
+    //     text1: newQ.EM,
+    //     position: "bottom",
+    //   });
+    //   reset();
+    //   handleClose();
+    //   await fetchListQuizQA();
+    // }
+    // if (newQ && newQ.EC !== 0) {
+    //   // Hiển thị thông báo lỗi
+    //   Toast.show({
+    //     type: "error",
+    //     text1: newQ.EM,
+    //     position: "bottom",
+    //   });
+    // }
   };
 
+  const handleAnswer = (index) => {
+    const cloneAnswers = _.cloneDeep(answers);
+    cloneAnswers[index].isCorrect = !cloneAnswers[index].isCorrect;
+    setAnswers(cloneAnswers);
+  };
+
+  const addAnswer = () => {
+    const cloneAnswers = _.cloneDeep(answers);
+    const newAnswer = { id: uuidv4(), isCorrect: false };
+    cloneAnswers.push(newAnswer);
+    setAnswers(cloneAnswers);
+  };
+
+  const deleteAnswer = (index) => {
+    const cloneAnswers = _.cloneDeep(answers);
+    cloneAnswers.splice(index, 1);
+    setAnswers(cloneAnswers);
+  };
   return (
     <View style={styles.container}>
       <ScrollView>
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Name</Text>
+        <View style={[styles.fieldContainer, { marginTop: 50 }]}>
+          {/* <Text style={styles.label}>Image</Text> */}
           <Controller
             control={control}
-            name="name"
-            rules={{
-              required: "Name is required",
-            }}
+            name="imageUrl"
+            rules={{ required: "Image is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                value={value}
-                placeholder="Your quiz name"
-                keyboardType="email-address"
-              />
+              <View
+                style={{
+                  width: 200,
+                  height: 200,
+                  justifyContent: "center",
+                  alignSelf: "center",
+                }}
+              >
+                <ImagePicker
+                  onTakeImage={(imageUrl) => onChange(imageUrl)}
+                  imageUrl={value}
+                />
+              </View>
             )}
           />
         </View>
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Description</Text>
+        <View style={[styles.fieldContainer, { marginHorizontal: 20 }]}>
+          {/* <Text style={styles.label}>Description</Text> */}
           <Controller
             control={control}
-            name="description"
+            name="descriptionQ"
             rules={{ required: "Description is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
@@ -110,45 +146,74 @@ const ModalUpdateQuiz = (props) => {
               />
             )}
           />
+          {errors.descriptionQ && (
+            <Text style={styles.error}>
+              {errors.descriptionQ.message as string}
+            </Text>
+          )}
         </View>
 
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Quiz type</Text>
-          <Controller
-            control={control}
-            name="type"
-            rules={{ required: "Role is required" }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View style={styles.picker}>
-                <Picker
-                  selectedValue={value}
-                  onValueChange={(itemValue) => onChange(itemValue)}
-                  onBlur={onBlur}
-                  // style={styles.picker}
-                  mode="dropdown"
-                >
-                  <Picker.Item label="Easy" value="EASY" />
-                  <Picker.Item label="Medium" value="MEDIUM" />
-                  <Picker.Item label="Hard" value="HARD" />
-                </Picker>
+        <View style={[styles.fieldContainer, { marginRight: 15 }]}>
+          {questionUpdate.answers.map((answer, index) => {
+            return (
+              <View
+                key={answer.id}
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginBottom: 5,
+                }}
+              >
+                <CheckBox
+                  checked={answer.isCorrect}
+                  onPress={() => handleAnswer(index)}
+                  checkedColor="green"
+                  uncheckedColor="red"
+                  containerStyle={{
+                    backgroundColor: "white",
+                    borderColor: "white",
+                  }}
+                />
+                <View style={{ flex: 1, marginRight: 5 }}>
+                  <Controller
+                    control={control}
+                    name={`descriptionA${answer.id}`}
+                    rules={{ required: "Description is required" }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        style={styles.input}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                        value={value}
+                        placeholder="Your Description"
+                      />
+                    )}
+                  />
+                  {errors[`descriptionA${answer.id}`] && (
+                    <Text style={styles.error}>
+                      {errors[`descriptionA${answer.id}`].message as string}
+                    </Text>
+                  )}
+                </View>
+                {index === questionUpdate.answers.length - 1 ? (
+                  <Ionicons
+                    name="add-circle"
+                    size={30}
+                    color="#218df3"
+                    onPress={addAnswer}
+                  />
+                ) : (
+                  <Ionicons
+                    name="remove-circle"
+                    size={30}
+                    color="#f32121"
+                    onPress={() => deleteAnswer(index)}
+                  />
+                )}
               </View>
-            )}
-          />
-        </View>
-
-        <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Image</Text>
-          <Controller
-            control={control}
-            name="imageUrl"
-            rules={{ required: "Image is required" }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <ImagePicker
-                onTakeImage={(imageUrl) => onChange(imageUrl)}
-                imageUrl={value}
-              />
-            )}
-          />
+            );
+          })}
         </View>
 
         <View style={styles.buttonContainer}>
@@ -167,8 +232,7 @@ const ModalUpdateQuiz = (props) => {
 const styles = StyleSheet.create({
   container: {
     width: 350,
-    height: 450,
-    padding: 20,
+    height: "80%",
     backgroundColor: "white",
     borderRadius: 10,
   },
@@ -176,6 +240,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   fieldContainer: {
+    marginTop: 25,
     marginBottom: 15,
   },
   label: {
@@ -200,26 +265,24 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    //alignItems: "center",
     marginTop: 10,
   },
   button: {
-    width: 120,
+    width: 100,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: "black",
+    backgroundColor: "#ffbf00",
   },
   text: {
     fontSize: 16,
     lineHeight: 21,
     fontWeight: "bold",
     letterSpacing: 0.25,
-    color: "white",
   },
 });
 
-export default ModalUpdateQuiz;
+export default ModalUpdateQuestion;

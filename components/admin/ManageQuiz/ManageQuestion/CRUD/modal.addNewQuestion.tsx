@@ -53,9 +53,6 @@ const ModalAddNewQuestion = (props) => {
       );
     }
 
-    //console.log("check question: ", newQ);
-    //console.log("check answers: ", newA);
-
     if (newQ && newQ.EC === 0) {
       // Hiển thị thông báo
       Toast.show({

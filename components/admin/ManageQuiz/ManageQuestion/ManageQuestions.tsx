@@ -5,13 +5,18 @@ import { useEffect, useState } from "react";
 import { getQuizWithQA } from "../../../../src/services/apiServices";
 import { Ionicons } from "@expo/vector-icons";
 import ModalAddNewQuestion from "./CRUD/modal.addNewQuestion";
+import ModalUpdateQuestion from "./CRUD/modal.updateQuestion";
 
 const ManageQuestion = (props) => {
   const { quiz } = props.route.params;
 
   const [showModalCreateQuestion, setShowModalCreateQuestion] = useState(false);
 
+  const [showModalUpdateQuestion, setShowModalUpdateQuestion] = useState(false);
+
   const [listQuizsQA, setListQuizQA] = useState([]);
+
+  const [questionUpdate, setQuestionUpdate] = useState({});
 
   useEffect(() => {
     fetchListQuizQA();
@@ -23,6 +28,11 @@ const ManageQuestion = (props) => {
     if (res.EC === 0) {
       setListQuizQA(res.DT.qa);
     }
+  };
+
+  const openModalToUpdate = (question) => {
+    setShowModalUpdateQuestion(true);
+    setQuestionUpdate(question);
   };
 
   return (
@@ -37,7 +47,12 @@ const ManageQuestion = (props) => {
             onPress={() => setShowModalCreateQuestion(true)}
           />
         </View>
-        <TableQuestions listQuizsQA={listQuizsQA} />
+        <TableQuestions
+          quizId={quiz.id}
+          listQuizsQA={listQuizsQA}
+          openModalUpdate={openModalToUpdate}
+          fetchListQuizQA={fetchListQuizQA}
+        />
         <Modal
           animationType="slide"
           transparent={true}
@@ -49,6 +64,20 @@ const ManageQuestion = (props) => {
               closeModal={() => setShowModalCreateQuestion(false)}
               fetchListQuizQA={fetchListQuizQA}
               quizId={quiz.id}
+            />
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showModalUpdateQuestion}
+          onRequestClose={() => setShowModalUpdateQuestion(false)} // Đóng modal khi người dùng ấn ngoài modal
+        >
+          <View style={styles.modalContainer}>
+            <ModalUpdateQuestion
+              questionUpdate={questionUpdate}
+              closeModal={() => setShowModalUpdateQuestion(false)}
+              fetchListQuizQA={fetchListQuizQA}
             />
           </View>
         </Modal>

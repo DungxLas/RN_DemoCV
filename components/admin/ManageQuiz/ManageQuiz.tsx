@@ -47,7 +47,6 @@ const ManageQuizScreen = (props) => {
           navigation={navigation}
         />
 
-        {/* Nút để mở modal */}
         <TouchableOpacity
           style={styles.button}
           onPress={() => setShowModalCreateQuiz(true)}
@@ -56,7 +55,6 @@ const ManageQuizScreen = (props) => {
           <Text style={styles.buttonText}> Add New Quiz</Text>
         </TouchableOpacity>
 
-        {/* Modal */}
         <Modal
           animationType="slide"
           transparent={true}

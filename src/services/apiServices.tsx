@@ -176,6 +176,15 @@ const postCreateNewAnswerForQuestion = (
   });
 };
 
+const deleteQuestionForQuiz = (
+  question_id,
+  quiz_id
+): Promise<ApiResponse | null> => {
+  return instance.delete("api/v1/question", {
+    data: { id: question_id, quizId: quiz_id },
+  });
+};
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -193,4 +202,5 @@ export {
   getQuizWithQA,
   postCreateNewQuestionForQuiz,
   postCreateNewAnswerForQuestion,
+  deleteQuestionForQuiz,
 };
