@@ -37,9 +37,8 @@ const ModalAddNewQuiz = (props) => {
         position: "bottom",
       });
 
-      reset();
-
-      // await fetchListUsers();
+      handleClose();
+      await fetchListQuiz();
     }
     if (res && res.EC !== 0) {
       // Hiển thị thông báo lỗi

@@ -25,6 +25,7 @@ const postCreateNewUser = (data): Promise<ApiResponse | null> => {
     },
   });
 };
+
 const getAllUsers = (): Promise<ApiResponse | null> => {
   return instance.get("api/v1/participant/all");
 };
@@ -142,6 +143,39 @@ const getQuizWithQA = (quizId): Promise<ApiResponse | null> => {
   return instance.get(`api/v1/quiz-with-qa/${quizId}`);
 };
 
+const postCreateNewQuestionForQuiz = (
+  quiz_id,
+  description,
+  questionImageUrl
+): Promise<ApiResponse | null> => {
+  const data = new FormData();
+  data.append("quiz_id", quiz_id);
+  data.append("description", description);
+  data.append("questionImage", {
+    uri: questionImageUrl,
+    type: "image/jpeg",
+    name: "userImage.jpg",
+  } as any);
+
+  return instance.post("api/v1/question", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+const postCreateNewAnswerForQuestion = (
+  description,
+  correct_answer,
+  question_id
+): Promise<ApiResponse | null> => {
+  return instance.post("api/v1/answer", {
+    description,
+    correct_answer,
+    question_id,
+  });
+};
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -157,4 +191,6 @@ export {
   pushUpdateQuiz,
   deleteQuizForAdmin,
   getQuizWithQA,
+  postCreateNewQuestionForQuiz,
+  postCreateNewAnswerForQuestion,
 };

@@ -47,6 +47,8 @@ const ManageQuestion = (props) => {
           <View style={styles.modalContainer}>
             <ModalAddNewQuestion
               closeModal={() => setShowModalCreateQuestion(false)}
+              fetchListQuizQA={fetchListQuizQA}
+              quizId={quiz.id}
             />
           </View>
         </Modal>
@@ -61,21 +63,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 10,
   },
-  // button: {
-  //   flexDirection: "row",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   alignSelf: "center",
-  //   backgroundColor: "#007bff",
-  //   padding: 10,
-  //   borderRadius: 5,
-  //   marginVertical: 20, // Đặt khoảng cách giữa TableUser và nút
-  // },
-  // buttonText: {
-  //   color: "white",
-  //   fontSize: 16,
-  //   marginLeft: 10,
-  // },
   modalContainer: {
     flex: 1,
     justifyContent: "center",

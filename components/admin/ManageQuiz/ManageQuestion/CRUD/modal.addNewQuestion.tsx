@@ -16,17 +16,23 @@ import { Ionicons } from "@expo/vector-icons";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
+import {
+  postCreateNewAnswerForQuestion,
+  postCreateNewQuestionForQuiz,
+} from "../../../../../src/services/apiServices";
 
 const ModalAddNewQuestion = (props) => {
-  const { closeModal, fetchListQuiz } = props;
+  const { closeModal, fetchListQuizQA, quizId } = props;
 
-  const [question, setQuestion] = useState({
-    id: uuidv4(),
-    description: "",
-    image: "",
-    imageName: "",
-    answers: [{ id: uuidv4(), description: "", isCorrect: false }],
-  });
+  // const [question, setQuestion] = useState({
+  //   id: uuidv4(),
+  //   description: "",
+  //   image: "",
+  //   imageName: "",
+  //   answers: [{ id: uuidv4(), description: "", isCorrect: false }],
+  // });
+
+  const [answers, setAnswers] = useState([{ id: uuidv4(), isCorrect: false }]);
 
   const {
     control,
@@ -41,7 +47,28 @@ const ModalAddNewQuestion = (props) => {
   };
 
   const onSubmit = async (data) => {
-    // const res = await postCreateNewQuiz(data);
+    const newQ = await postCreateNewQuestionForQuiz(
+      +quizId,
+      data.descriptionQ,
+      data.imageUrl
+    );
+
+    let newA = await Promise.all(
+      answers.map(async (answer, index) => {
+        if (data[`descriptionA${index}`] !== "") {
+          const a = await postCreateNewAnswerForQuestion(
+            data[`descriptionA${index}`],
+            answer.isCorrect,
+            newQ.DT.id
+          );
+          return a;
+        }
+      })
+    );
+
+    console.log("check question: ", newQ);
+    console.log("check answers: ", newA);
+
     // if (res && res.EC === 0) {
     //   // Hiển thị thông báo
     //   Toast.show({
@@ -63,23 +90,22 @@ const ModalAddNewQuestion = (props) => {
   };
 
   const handleAnswer = (index) => {
-    const cloneQuestion = _.cloneDeep(question);
-    cloneQuestion.answers[index].isCorrect =
-      !cloneQuestion.answers[index].isCorrect;
-    setQuestion(cloneQuestion);
+    const cloneAnswers = _.cloneDeep(answers);
+    cloneAnswers[index].isCorrect = !cloneAnswers[index].isCorrect;
+    setAnswers(cloneAnswers);
   };
 
   const addAnswer = () => {
-    const cloneQuestion = _.cloneDeep(question);
+    const cloneAnswers = _.cloneDeep(answers);
     const newAnswer = { id: uuidv4(), description: "", isCorrect: false };
-    cloneQuestion.answers.push(newAnswer);
-    setQuestion(cloneQuestion);
+    cloneAnswers.push(newAnswer);
+    setAnswers(cloneAnswers);
   };
 
   const deleteAnswer = (index) => {
-    const cloneQuestion = _.cloneDeep(question);
-    cloneQuestion.answers.splice(index, 1);
-    setQuestion(cloneQuestion);
+    const cloneAnswers = _.cloneDeep(answers);
+    cloneAnswers.splice(index, 1);
+    setAnswers(cloneAnswers);
   };
 
   return (
@@ -113,7 +139,7 @@ const ModalAddNewQuestion = (props) => {
           {/* <Text style={styles.label}>Description</Text> */}
           <Controller
             control={control}
-            name="description"
+            name="descriptionQ"
             rules={{ required: "Description is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
@@ -128,7 +154,7 @@ const ModalAddNewQuestion = (props) => {
         </View>
 
         <View style={[styles.fieldContainer, { marginRight: 15 }]}>
-          {question.answers.map((answer, index) => {
+          {answers.map((answer, index) => {
             return (
               <View
                 key={answer.id}
@@ -154,7 +180,7 @@ const ModalAddNewQuestion = (props) => {
                 <View style={{ flex: 1, marginRight: 5 }}>
                   <Controller
                     control={control}
-                    name="description"
+                    name={`descriptionA${index}`}
                     rules={{ required: "Description is required" }}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
@@ -167,7 +193,7 @@ const ModalAddNewQuestion = (props) => {
                     )}
                   />
                 </View>
-                {index === question.answers.length - 1 ? (
+                {index === answers.length - 1 ? (
                   <Ionicons
                     name="add-circle"
                     size={30}

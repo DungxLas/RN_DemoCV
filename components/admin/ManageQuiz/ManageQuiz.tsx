@@ -64,7 +64,10 @@ const ManageQuizScreen = (props) => {
           onRequestClose={() => setShowModalCreateQuiz(false)} // Đóng modal khi người dùng ấn ngoài modal
         >
           <View style={styles.modalContainer}>
-            <ModalAddNewQuiz closeModal={() => setShowModalCreateQuiz(false)} />
+            <ModalAddNewQuiz
+              closeModal={() => setShowModalCreateQuiz(false)}
+              fetchListQuiz={fetchListQuizs}
+            />
           </View>
         </Modal>
         <Modal
