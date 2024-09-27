@@ -72,6 +72,9 @@ const ModalAddNewQuiz = (props) => {
               />
             )}
           />
+          {errors.name && (
+            <Text style={styles.error}>{errors.name.message as string}</Text>
+          )}
         </View>
 
         <View style={styles.fieldContainer}>
@@ -90,6 +93,11 @@ const ModalAddNewQuiz = (props) => {
               />
             )}
           />
+          {errors.description && (
+            <Text style={styles.error}>
+              {errors.description.message as string}
+            </Text>
+          )}
         </View>
 
         <View style={styles.fieldContainer}>

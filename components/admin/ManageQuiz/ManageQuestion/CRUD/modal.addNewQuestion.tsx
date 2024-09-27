@@ -24,14 +24,6 @@ import {
 const ModalAddNewQuestion = (props) => {
   const { closeModal, fetchListQuizQA, quizId } = props;
 
-  // const [question, setQuestion] = useState({
-  //   id: uuidv4(),
-  //   description: "",
-  //   image: "",
-  //   imageName: "",
-  //   answers: [{ id: uuidv4(), description: "", isCorrect: false }],
-  // });
-
   const [answers, setAnswers] = useState([{ id: uuidv4(), isCorrect: false }]);
 
   const {
@@ -53,40 +45,37 @@ const ModalAddNewQuestion = (props) => {
       data.imageUrl
     );
 
-    let newA = await Promise.all(
-      answers.map(async (answer, index) => {
-        if (data[`descriptionA${index}`] !== "") {
-          const a = await postCreateNewAnswerForQuestion(
-            data[`descriptionA${index}`],
-            answer.isCorrect,
-            newQ.DT.id
-          );
-          return a;
-        }
-      })
-    );
+    for (const answer of answers) {
+      await postCreateNewAnswerForQuestion(
+        data[`descriptionA${answer.id}`],
+        answer.isCorrect,
+        newQ.DT.id
+      );
+    }
 
-    console.log("check question: ", newQ);
-    console.log("check answers: ", newA);
+    //console.log("check question: ", newQ);
+    //console.log("check answers: ", newA);
 
-    // if (res && res.EC === 0) {
-    //   // Hiển thị thông báo
-    //   Toast.show({
-    //     type: "success",
-    //     text1: res.EM,
-    //     position: "bottom",
-    //   });
-    //   reset();
-    //   // await fetchListUsers();
-    // }
-    // if (res && res.EC !== 0) {
-    //   // Hiển thị thông báo lỗi
-    //   Toast.show({
-    //     type: "error",
-    //     text1: res.EM,
-    //     position: "bottom",
-    //   });
-    // }
+    if (newQ && newQ.EC === 0) {
+      // Hiển thị thông báo
+      Toast.show({
+        type: "success",
+        text1: newQ.EM,
+        position: "bottom",
+      });
+
+      reset();
+      handleClose();
+      await fetchListQuizQA();
+    }
+    if (newQ && newQ.EC !== 0) {
+      // Hiển thị thông báo lỗi
+      Toast.show({
+        type: "error",
+        text1: newQ.EM,
+        position: "bottom",
+      });
+    }
   };
 
   const handleAnswer = (index) => {
@@ -151,6 +140,11 @@ const ModalAddNewQuestion = (props) => {
               />
             )}
           />
+          {errors.descriptionQ && (
+            <Text style={styles.error}>
+              {errors.descriptionQ.message as string}
+            </Text>
+          )}
         </View>
 
         <View style={[styles.fieldContainer, { marginRight: 15 }]}>
@@ -180,7 +174,7 @@ const ModalAddNewQuestion = (props) => {
                 <View style={{ flex: 1, marginRight: 5 }}>
                   <Controller
                     control={control}
-                    name={`descriptionA${index}`}
+                    name={`descriptionA${answer.id}`}
                     rules={{ required: "Description is required" }}
                     render={({ field: { onChange, onBlur, value } }) => (
                       <TextInput
@@ -192,6 +186,11 @@ const ModalAddNewQuestion = (props) => {
                       />
                     )}
                   />
+                  {errors[`descriptionA${answer.id}`] && (
+                    <Text style={styles.error}>
+                      {errors[`descriptionA${answer.id}`].message as string}
+                    </Text>
+                  )}
                 </View>
                 {index === answers.length - 1 ? (
                   <Ionicons
