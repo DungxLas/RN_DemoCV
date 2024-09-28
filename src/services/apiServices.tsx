@@ -185,6 +185,10 @@ const deleteQuestionForQuiz = (
   });
 };
 
+const postUpsertQA = (data): Promise<ApiResponse | null> => {
+  return instance.post("api/v1/quiz-upsert-qa", { ...data });
+};
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -203,4 +207,5 @@ export {
   postCreateNewQuestionForQuiz,
   postCreateNewAnswerForQuestion,
   deleteQuestionForQuiz,
+  postUpsertQA,
 };

@@ -78,6 +78,7 @@ const ManageQuestion = (props) => {
               questionUpdate={questionUpdate}
               closeModal={() => setShowModalUpdateQuestion(false)}
               fetchListQuizQA={fetchListQuizQA}
+              quizId={quiz.id}
             />
           </View>
         </Modal>

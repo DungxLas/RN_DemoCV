@@ -17,16 +17,15 @@ import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import _ from "lodash";
 import {
+  deleteQuestionForQuiz,
   postCreateNewAnswerForQuestion,
   postCreateNewQuestionForQuiz,
 } from "../../../../../src/services/apiServices";
 
 const ModalUpdateQuestion = (props) => {
-  const { closeModal, questionUpdate, fetchListQuizQA } = props;
+  const { closeModal, questionUpdate, fetchListQuizQA, quizId } = props;
 
-  const [answers, setAnswers] = useState([
-    // { id: "", description: "", isCorrect: false },
-  ]);
+  const [answers, setAnswers] = useState([{ id: uuidv4(), isCorrect: false }]);
 
   const {
     control,
@@ -52,37 +51,40 @@ const ModalUpdateQuestion = (props) => {
   };
 
   const onSubmit = async (data) => {
-    // const newQ = await postCreateNewQuestionForQuiz(
-    //   +quizId,
-    //   data.descriptionQ,
-    //   data.imageUrl
-    // );
-    // for (const answer of answers) {
-    //   await postCreateNewAnswerForQuestion(
-    //     data[`descriptionA${answer.id}`],
-    //     answer.isCorrect,
-    //     newQ.DT.id
-    //   );
-    // }
-    // if (newQ && newQ.EC === 0) {
-    //   // Hiển thị thông báo
-    //   Toast.show({
-    //     type: "success",
-    //     text1: newQ.EM,
-    //     position: "bottom",
-    //   });
-    //   reset();
-    //   handleClose();
-    //   await fetchListQuizQA();
-    // }
-    // if (newQ && newQ.EC !== 0) {
-    //   // Hiển thị thông báo lỗi
-    //   Toast.show({
-    //     type: "error",
-    //     text1: newQ.EM,
-    //     position: "bottom",
-    //   });
-    // }
+    const newQ = await postCreateNewQuestionForQuiz(
+      +quizId,
+      data.descriptionQ,
+      data.imageUrl
+    );
+    for (const answer of answers) {
+      await postCreateNewAnswerForQuestion(
+        data[`descriptionA${answer.id}`],
+        answer.isCorrect,
+        newQ.DT.id
+      );
+    }
+
+    const res = await deleteQuestionForQuiz(questionUpdate.id, +quizId);
+
+    if (newQ && newQ.EC === 0) {
+      // Hiển thị thông báo
+      // Toast.show({
+      //   type: "success",
+      //   text1: newQ.EM,
+      //   position: "bottom",
+      // });
+      reset();
+      handleClose();
+      await fetchListQuizQA();
+    }
+    if (newQ && newQ.EC !== 0) {
+      // Hiển thị thông báo lỗi
+      // Toast.show({
+      //   type: "error",
+      //   text1: newQ.EM,
+      //   position: "bottom",
+      // });
+    }
   };
 
   const handleAnswer = (index) => {
@@ -154,7 +156,7 @@ const ModalUpdateQuestion = (props) => {
         </View>
 
         <View style={[styles.fieldContainer, { marginRight: 15 }]}>
-          {questionUpdate.answers.map((answer, index) => {
+          {answers.map((answer, index) => {
             return (
               <View
                 key={answer.id}
@@ -166,10 +168,12 @@ const ModalUpdateQuestion = (props) => {
                 }}
               >
                 <CheckBox
+                  //title={answer.description}
                   checked={answer.isCorrect}
                   onPress={() => handleAnswer(index)}
                   checkedColor="green"
                   uncheckedColor="red"
+                  //textStyle={styles.text}
                   containerStyle={{
                     backgroundColor: "white",
                     borderColor: "white",
@@ -196,7 +200,7 @@ const ModalUpdateQuestion = (props) => {
                     </Text>
                   )}
                 </View>
-                {index === questionUpdate.answers.length - 1 ? (
+                {index === answers.length - 1 ? (
                   <Ionicons
                     name="add-circle"
                     size={30}
@@ -218,7 +222,7 @@ const ModalUpdateQuestion = (props) => {
 
         <View style={styles.buttonContainer}>
           <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-            <Text style={styles.text}>Save</Text>
+            <Text style={styles.text}>Update</Text>
           </Pressable>
           <Pressable style={styles.button} onPress={() => handleClose()}>
             <Text style={styles.text}>Close</Text>
