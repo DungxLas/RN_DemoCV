@@ -3,4 +3,6 @@ type RootStackParamList = {
   Admin: undefined;
   User: undefined;
   DetailQuiz: undefined;
+  Login: undefined;
+  Signup: undefined;
 };

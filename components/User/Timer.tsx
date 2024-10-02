@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 
-const Timer = () => {
+const Timer = (props) => {
   const [timeLeft, setTimeLeft] = useState(60); // Đếm ngược từ 60 giây
   const [isRunning, setIsRunning] = useState(false); // Trạng thái của timer
 
   useEffect(() => {
     let timer = null;
     if (isRunning) {
+      if (timeLeft === 0) {
+        props.onTimeUp();
+        return;
+      }
+
       timer = setInterval(() => {
         setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
       }, 1000);

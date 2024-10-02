@@ -91,6 +91,7 @@ const DetailQuiz = (props) => {
       setDataQuiz(dataQuizClone);
     }
   };
+
   const handleFinishQuiz = async () => {
     let payload = {
       quizId: +quizID,
@@ -131,11 +132,16 @@ const DetailQuiz = (props) => {
     }
   };
 
+  const onTimeUp = () => {
+    handleFinishQuiz();
+    //alert("times up");
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <HeaderQuiz title={quizTitle} />
       <View style={styles.timerContainer}>
-        <Timer />
+        <Timer onTimeUp={onTimeUp} />
       </View>
       {dataQuiz && dataQuiz.length > 0 ? (
         <View style={styles.quizContainer}>

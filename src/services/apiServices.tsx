@@ -189,6 +189,13 @@ const postUpsertQA = (data): Promise<ApiResponse | null> => {
   return instance.post("api/v1/quiz-upsert-qa", { ...data });
 };
 
+const logout = (email, refresh_token): Promise<ApiResponse | null> => {
+  return instance.post("api/v1/logout", {
+    email,
+    refresh_token,
+  });
+};
+
 export {
   postCreateNewUser,
   getAllUsers,
@@ -208,4 +215,5 @@ export {
   postCreateNewAnswerForQuestion,
   deleteQuestionForQuiz,
   postUpsertQA,
+  logout,
 };
