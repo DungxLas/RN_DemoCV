@@ -1,15 +1,22 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import store from "../redux/store";
+import { Platform } from "react-native";
+
+const backend =
+  Platform.OS === "android"
+    ? process.env.EXPO_PUBLIC_ANDROID_API_URL
+    : process.env.EXPO_PUBLIC_IOS_API_URL;
 
 const instance = axios.create({
-  baseURL: "http://192.168.0.106:8081/",
+  baseURL: backend,
+  //timeout: 2 * 1000,
 });
 
 // Add a request interceptor
 instance.interceptors.request.use(
-  function (config) {
-    const access_token = store?.getState()?.user?.account?.access_token;
-    config.headers["Authorization"] = "Bearer " + access_token;
+  async function (config) {
+    const access_token = await AsyncStorage.getItem("access_token");
+    config.headers["Authorization"] = `Bearer ${access_token}`;
 
     return config;
   },

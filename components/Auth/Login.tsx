@@ -11,13 +11,11 @@ import { useForm, Controller } from "react-hook-form";
 import Toast from "react-native-toast-message";
 import { postLogin } from "../../src/services/apiServices";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { useDispatch } from "react-redux";
-import { doLogin } from "../../src/redux/action/userAction";
+import { useCurrentApp } from "../../src/context/app.context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Login = (props) => {
   const { navigation } = props;
-
-  const dispatch = useDispatch();
 
   const {
     control,
@@ -30,14 +28,17 @@ const Login = (props) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const { setAppState } = useCurrentApp();
+
   const onSubmit = async (data) => {
     setIsLoading(true);
 
     const res = await postLogin(data.email, data.password);
     if (res && res.EC === 0) {
-      dispatch(doLogin(res));
       reset();
-      navigation.navigate("Layout");
+      await AsyncStorage.setItem("access_token", res.DT.access_token);
+      setAppState(res.DT);
+      navigation.replace("Home");
       // Hiển thị thông báo thanh cong
       Toast.show({
         type: "success",

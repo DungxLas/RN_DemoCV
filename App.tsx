@@ -2,18 +2,17 @@ import "./zzz/gesture-handler";
 import AppNavigation from "./components/navigation/app.navigation";
 import { SafeAreaView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { Provider } from "react-redux";
-import store from "./src/redux/store";
+import AppProvider from "./src/context/app.context";
 
 const App = () => {
   return (
-    <Provider store={store}>
+    <AppProvider>
       <SafeAreaView style={{ flex: 1 }}>
         <NavigationContainer>
           <AppNavigation />
         </NavigationContainer>
       </SafeAreaView>
-    </Provider>
+    </AppProvider>
   );
 };
 

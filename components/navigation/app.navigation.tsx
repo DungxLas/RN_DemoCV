@@ -1,62 +1,25 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import HomeScreen from "../home";
 import AdminScreen from "../admin/admin";
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-} from "@react-navigation/drawer";
 import React from "react";
-import AppHeader from "./app.header";
 import Login from "../Auth/Login";
 import Signup from "../Auth/Signup";
 import Toast from "react-native-toast-message";
-import { useDispatch, useSelector } from "react-redux";
 import ListQuiz from "../User/ListQuiz";
 import DetailQuiz from "../User/DetailQuiz";
-import { View, Button } from "react-native";
+import { Button } from "react-native";
 import { logout } from "../../src/services/apiServices";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { doLogout } from "../../src/redux/action/userAction";
-
-const HomeLayout = () => {
-  const Stack = createStackNavigator<RootStackParamList>();
-  return (
-    <Stack.Navigator
-    // screenOptions={{ headerShown: false }}
-    >
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ header: () => <AppHeader /> }}
-      />
-      <Stack.Screen
-        name="Admin"
-        component={AdminScreen}
-        options={{ header: () => <></> }}
-      />
-      <Stack.Screen name="User" component={ListQuiz} />
-      <Stack.Screen
-        name="DetailQuiz"
-        options={{ headerShown: false }}
-        component={DetailQuiz}
-      />
-    </Stack.Navigator>
-  );
-};
+import { useCurrentApp } from "../../src/context/app.context";
 
 const AppNavigation = () => {
-  const Drawer = createDrawerNavigator();
-
-  const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
-  const account = useSelector((state) => state.user.account);
+  const Stack = createStackNavigator();
+  const { appState } = useCurrentApp();
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const dispatch = useDispatch();
-
-  const handleLogout = async () => {
-    let res = await logout(account.email, account.refresh_token);
+  async function handleLogout() {
+    let res = await logout(appState.email, appState.refresh_token);
 
     if (res && res.EC === 0) {
       // Hiển thị thông báo
@@ -66,7 +29,6 @@ const AppNavigation = () => {
         position: "bottom",
       });
 
-      dispatch(doLogout());
       navigation.navigate("Login");
     }
 
@@ -78,58 +40,45 @@ const AppNavigation = () => {
         position: "bottom",
       });
     }
-  };
-
-  const CustomDrawerContent = (props) => {
-    if (isAuthenticated) {
-      return (
-        <DrawerContentScrollView {...props}>
-          <DrawerItemList {...props} />
-          <View style={{ marginTop: 20, paddingHorizontal: 10 }}>
-            <Button title="Logout" onPress={handleLogout} />
-          </View>
-        </DrawerContentScrollView>
-      );
-    }
-
-    return (
-      <DrawerContentScrollView {...props}>
-        <DrawerItemList {...props} />
-      </DrawerContentScrollView>
-    );
-  };
+  }
 
   return (
     <>
-      <Drawer.Navigator
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-        screenOptions={{
-          drawerStyle: {
-            backgroundColor: "#e67373", // Màu nền tùy chỉnh
-          },
-        }}
-      >
-        <Drawer.Screen
-          name="Layout"
-          component={HomeLayout}
-          options={{ header: () => <></> }}
-        />
-        <Drawer.Screen
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen
           name="Login"
           component={Login}
-          options={{
-            drawerItemStyle: isAuthenticated ? { display: "none" } : {},
-          }}
+          options={{ header: () => <></> }}
         />
-        <Drawer.Screen
+        <Stack.Screen
           name="Signup"
           component={Signup}
           options={{
             title: "Sign up",
-            drawerItemStyle: isAuthenticated ? { display: "none" } : {},
           }}
         />
-      </Drawer.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            headerRight: () => (
+              <Button onPress={handleLogout} title="Log out" />
+            ),
+            headerLeft: null,
+          }}
+        />
+        <Stack.Screen
+          name="Admin"
+          component={AdminScreen}
+          options={{ header: () => <></> }}
+        />
+        <Stack.Screen name="User" component={ListQuiz} />
+        <Stack.Screen
+          name="DetailQuiz"
+          options={{ headerShown: false }}
+          component={DetailQuiz}
+        />
+      </Stack.Navigator>
       <Toast />
     </>
   );

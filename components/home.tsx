@@ -1,8 +1,11 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";
-import AppHeader from "./navigation/app.header";
+import { useCurrentApp } from "../src/context/app.context";
 
 const HomeScreen = (props) => {
-  const { navigation } = props;
+  const { navigation, route } = props;
+  const { appState } = useCurrentApp();
 
   return (
     <View style={styles.container}>
@@ -10,6 +13,7 @@ const HomeScreen = (props) => {
         <Button
           title="View Admin"
           onPress={() => navigation.navigate("Admin")}
+          disabled={appState?.role === "USER" ? true : false}
         />
       </View>
       <View style={{ margin: 10 }}>
